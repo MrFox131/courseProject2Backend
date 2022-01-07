@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  postgresql:
+    image: postgres:latest
+    env_file:
+      - .env
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - delivery_system
+
+  backend:
+    build: backend
+    env_file:
+      - .env
+    networks:
+      - delivery_system
+    ports:
+      - "80:80"
+
+networks:
+  delivery_system:
+
+volumes:
+  db_data:
