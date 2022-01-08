@@ -99,7 +99,7 @@ async def register(data: schemas.RegisterRequest, db: Session = Depends(get_db))
             }
         }
     },
-    409: {
+    401: {
         "description": "Invalid username or password",
         "content": {
             "application/json": {
@@ -135,7 +135,7 @@ async def login(data: OAuth2PasswordRequestForm = Depends()):
             }
         }
     },
-    409: {
+    401: {
         "description": "Invalid username or password",
         "content": {
             "application/json": {
@@ -173,6 +173,6 @@ async def get_roles():
                         })
 
 
-@app.get("/api/v1/check_token_expiration")
+@app.get("/api/v1/me", response_model=schemas.UserModel)
 async def check_token_expiration(user: models.User = Depends(manager)):
-    return {"status": "OK"}
+    return user

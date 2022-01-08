@@ -2,6 +2,8 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from ..db import models
+
 
 class Cloth(BaseModel):
     article: int
@@ -52,6 +54,15 @@ class AccessoryStorage(BaseModel):
     batch: int
     article: int
     count: int
+
+    class Config:
+        orm_mode = True
+
+
+class UserModel(BaseModel):
+    login: str
+    name: str
+    role: models.UserType
 
     class Config:
         orm_mode = True
