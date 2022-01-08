@@ -48,3 +48,10 @@ class PlainLoginRequest(BaseModel):
     login: str
     password: str
 
+class AccessoryStorage(BaseModel):
+    batch: int
+    article: int
+    count: int
+
+    class Config:
+        orm_mode = True
