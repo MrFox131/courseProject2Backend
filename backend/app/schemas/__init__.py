@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 
 from pydantic import BaseModel
@@ -63,6 +64,17 @@ class UserModel(BaseModel):
     login: str
     name: str
     role: models.UserType
+
+    class Config:
+        orm_mode = True
+
+
+class Order(BaseModel):
+    creation_date: datetime.datetime
+    completion_date: Optional[datetime.datetime]
+    stage: models.OrderStage
+    manager: int
+    cost: float
 
     class Config:
         orm_mode = True

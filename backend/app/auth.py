@@ -186,6 +186,6 @@ async def get_roles():
             }
         }
     }
-})
+}, tags=["auth"])
 async def check_token_expiration(user: models.User = Depends(manager)):
     return user
