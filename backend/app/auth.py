@@ -10,7 +10,7 @@ from fastapi import Depends
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
-from . import exceptions
+from . import exceptions, schemas
 from .main import app, manager
 from .db import models, get_db
 
@@ -48,18 +48,18 @@ async def get_user(identifier: str):
         },
     }
 }, tags=["auth"])
-async def register(login: str, password: str, name: str, role: int, db: Session = Depends(get_db)):
-    same_login_person: models.User = await get_user(login)
+async def register(data: schemas.RegisterRequest, db: Session = Depends(get_db)):
+    same_login_person: models.User = await get_user(data.login)
     if same_login_person is not None:
         raise exceptions.UsernameAlreadyExists
 
-    key, salt = hash_password(password)
+    key, salt = hash_password(data.password)
     new_user_model = models.User()
-    new_user_model.login = login
+    new_user_model.login = data.login
     new_user_model.password = key
-    new_user_model.name = name
+    new_user_model.name = data.name
     new_user_model.salt = salt
-    new_user_model.role = models.UserType(role)
+    new_user_model.role = models.UserType(data.role)
     try:
         db.add(new_user_model)
         db.commit()

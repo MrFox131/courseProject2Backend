@@ -24,3 +24,10 @@ class ClothStorage(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class RegisterRequest(BaseModel):
+    login: str
+    password: str
+    name: str
+    role: int
