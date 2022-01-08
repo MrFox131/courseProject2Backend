@@ -54,12 +54,19 @@ async def register(data: schemas.RegisterRequest, db: Session = Depends(get_db))
         raise exceptions.UsernameAlreadyExists
 
     key, salt = hash_password(data.password)
+    try:
+        models.UserType(data.role)
+    except:
+        return JSONResponse(status_code=400, content={
+            "description": "No such role"
+        })
     new_user_model = models.User()
     new_user_model.login = data.login
     new_user_model.password = key
     new_user_model.name = data.name
     new_user_model.salt = salt
     new_user_model.role = models.UserType(data.role)
+
     try:
         db.add(new_user_model)
         db.commit()
