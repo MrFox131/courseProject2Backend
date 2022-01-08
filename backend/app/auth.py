@@ -173,6 +173,19 @@ async def get_roles():
                         })
 
 
-@app.get("/api/v1/me", response_model=schemas.UserModel)
+@app.get("/api/v1/me", response_model=schemas.UserModel, responses={
+    200: {
+        "description": "profile info",
+        "content": {
+            "application/json": {
+                "example": {
+                    "login": "mrfox131",
+                    "name": "Max",
+                    "role": 5
+                }
+            }
+        }
+    }
+})
 async def check_token_expiration(user: models.User = Depends(manager)):
     return user
