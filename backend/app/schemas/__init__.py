@@ -26,6 +26,17 @@ class ClothStorage(BaseModel):
         orm_mode = True
 
 
+class Accessory(BaseModel):
+    article: int
+    name: str
+    type: str
+    width: int
+    length: Optional[int] = None
+    weight: Optional[float] = None
+    image: Optional[str] = None
+    price: Optional[float] = None
+
+
 class RegisterRequest(BaseModel):
     login: str
     password: str
@@ -36,3 +47,4 @@ class RegisterRequest(BaseModel):
 class PlainLoginRequest(BaseModel):
     login: str
     password: str
+
