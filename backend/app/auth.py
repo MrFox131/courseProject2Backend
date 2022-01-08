@@ -1,16 +1,18 @@
 import hashlib
 import os
+from datetime import timedelta
 
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
-from .main import app, manager
-
-from .db import models, get_db
 from fastapi import Depends
 from fastapi.responses import JSONResponse
+from fastapi.security import OAuth2PasswordRequestForm
+
 from . import exceptions
+from .main import app, manager
+from .db import models, get_db
 
 
 def hash_password(password: str, salt: bytes = os.urandom(32)) -> (bytes, bytes):
@@ -46,8 +48,8 @@ async def get_user(identifier: str):
         },
     }
 }, tags=["auth"])
-def register(login: str, password: str, name: str, role: int, db: Session = Depends(get_db)):
-    same_login_person = get_user(login)
+async def register(login: str, password: str, name: str, role: int, db: Session = Depends(get_db)):
+    same_login_person: models.User = await get_user(login)
     if same_login_person is not None:
         raise exceptions.UsernameAlreadyExists
 
@@ -76,3 +78,77 @@ def register(login: str, password: str, name: str, role: int, db: Session = Depe
             "description": "Successfully created new user"
         }
     )
+
+
+# noinspection PyShadowingNames
+@app.post("/api/v1/login", responses={
+    200: {
+        "description": "OK",
+        "content": {
+            "application/json": {
+                "example": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI\
+6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+                            "token_type": "Bearer"}
+            }
+        }
+    },
+    409: {
+        "description": "Invalid username or password",
+        "content": {
+            "application/json": {
+                "example": {"description": "Invalid username or password"}
+            }
+        },
+    }
+}, tags=["auth"])
+async def login(data: OAuth2PasswordRequestForm = Depends()):
+    user: models.User = await get_user(data.username)
+    if user is None:
+        raise exceptions.InvalidNicknameOrPassword
+    if not verify_password(data.password, user.salt, user.password):
+        raise exceptions.InvalidNicknameOrPassword
+
+    access_token = manager.create_access_token(
+        data=dict(sub=user.login),
+        expires=timedelta(days=1)
+    )
+    return {
+        "access_token": access_token,
+        "token_type": "Bearer"
+    }
+
+@app.post("/api/v1/plane_login", responses={
+    200: {
+        "description": "OK",
+        "content": {
+            "application/json": {
+                "example": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI\
+6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+                            "token_type": "Bearer"}
+            }
+        }
+    },
+    409: {
+        "description": "Invalid username or password",
+        "content": {
+            "application/json": {
+                "example": {"description": "Invalid username or password"}
+            }
+        },
+    }
+}, tags=["auth"])
+async def plain_login(login: str, password: str):
+    user: models.User = await get_user(login)
+    if user is None:
+        raise exceptions.InvalidNicknameOrPassword
+    if not verify_password(password, user.salt, user.password):
+        raise exceptions.InvalidNicknameOrPassword
+
+    access_token = manager.create_access_token(
+        data=dict(sub=user.login),
+        expires=timedelta(days=1)
+    )
+    return {
+        "access_token": access_token,
+        "token_type": "Bearer"
+    }
