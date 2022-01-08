@@ -152,3 +152,17 @@ async def plain_login(login: str, password: str):
         "access_token": access_token,
         "token_type": "Bearer"
     }
+
+
+@app.get("/api/v1/roles", tags=["auth"])
+async def get_roles():
+    return JSONResponse(status_code=200,
+                        content={
+                            models.UserType.manager.value: "Менеджер",
+                            models.UserType.chef.value: "Директор",
+                            models.UserType.customer.value: "Заказчик",
+                            models.UserType.former_employee.value: "Швея",
+                            models.UserType.storage_manager.value: "Кладовщик"
+                        })
+
+
