@@ -15,6 +15,7 @@ manager = LoginManager(SECRET, "/api/v1/login")
 
 
 from . import auth
+from . import materials
 
 @app.get("/hello_world")
 def hello_world():

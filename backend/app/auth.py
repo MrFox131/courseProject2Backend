@@ -166,3 +166,6 @@ async def get_roles():
                         })
 
 
+@app.get("/api/v1/check_token_expiration")
+async def check_token_expiration(user: models.User = Depends(manager)):
+    return {"status": "OK"}
