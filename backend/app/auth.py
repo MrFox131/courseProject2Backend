@@ -137,11 +137,11 @@ async def login(data: OAuth2PasswordRequestForm = Depends()):
         },
     }
 }, tags=["auth"])
-async def plain_login(login: str, password: str):
-    user: models.User = await get_user(login)
+async def plain_login(data: schemas.PlainLoginRequest):
+    user: models.User = await get_user(data.login)
     if user is None:
         raise exceptions.InvalidNicknameOrPassword
-    if not verify_password(password, user.salt, user.password):
+    if not verify_password(data.password, user.salt, user.password):
         raise exceptions.InvalidNicknameOrPassword
 
     access_token = manager.create_access_token(

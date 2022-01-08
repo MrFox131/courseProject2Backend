@@ -31,3 +31,8 @@ class RegisterRequest(BaseModel):
     password: str
     name: str
     role: int
+
+
+class PlainLoginRequest(BaseModel):
+    login: str
+    password: str
