@@ -51,6 +51,7 @@ class PlainLoginRequest(BaseModel):
     login: str
     password: str
 
+
 class AccessoryStorage(BaseModel):
     batch: int
     article: int
@@ -78,3 +79,25 @@ class Order(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class CreateNewAccessoryRequest(BaseModel):
+    article: int
+    name: str
+    type: str
+    width: int
+    length: Optional[int]
+    weight: Optional[int]
+    image: Optional[str]  # TODO: implement image upload
+    price: float
+
+
+class CreateNewClothRequest(BaseModel):
+    article: int
+    color: str
+    print: Optional[str]
+    width: int
+    name: str
+    image: Optional[str]  # TODO: implement images upload
+    composition: str
+    price: float

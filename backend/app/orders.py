@@ -13,6 +13,8 @@ from .db import models, get_db
 from . import schemas
 
 
-@app.get("/api/v1/order", response_model=List[schemas.Order], tags=["orders"]) #TODO:Filter orders in responsibility with user role
+@app.get(
+    "/api/v1/order", response_model=List[schemas.Order], tags=["orders"]
+)  # TODO:Filter orders in responsibility with user role
 async def order(user: models.User = Depends(manager), db: Session = Depends(get_db)):
     return db.query(models.Order).all()

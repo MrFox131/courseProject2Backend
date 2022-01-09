@@ -18,10 +18,6 @@ from . import auth
 from . import materials
 from . import orders
 
-@app.get("/hello_world")
-def hello_world():
-    return "hello"
-
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
