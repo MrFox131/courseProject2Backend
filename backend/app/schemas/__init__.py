@@ -39,6 +39,9 @@ class Accessory(BaseModel):
     image: Optional[str] = None
     price: Optional[float] = None
 
+    class Config:
+        orm_mode = True
+
 
 class RegisterRequest(BaseModel):
     login: str
