@@ -91,7 +91,6 @@ class CreateNewAccessoryRequest(BaseModel):
     width: int
     length: Optional[int]
     weight: Optional[int]
-    image: Optional[str]  # TODO: implement image upload
     price: float
 
 
@@ -101,6 +100,5 @@ class CreateNewClothRequest(BaseModel):
     print: Optional[str]
     width: int
     name: str
-    image: Optional[str]  # TODO: implement images upload
     composition: str
     price: float

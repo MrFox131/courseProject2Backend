@@ -1,16 +1,18 @@
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
 from fastapi import Depends
 from fastapi.responses import JSONResponse
+from fastapi import Form, UploadFile, File
 from fastapi.security import OAuth2PasswordRequestForm
 
 from . import exceptions
 from .main import app, manager
 from .db import models, get_db
 from . import schemas
+from . import utils
 
 
 @app.get("/api/v1/cloth", response_model=List[schemas.Cloth], tags=["storage"])
@@ -66,38 +68,53 @@ async def get_accessory_packs(
             "description": "OK",
             "content": {
                 "application/json": {
-                    "example": {
-                        "description": "Successfully created new accessory"
-                    }
+                    "example": {"description": "Successfully created new accessory"}
                 }
-            }
+            },
         },
         409: {
             "description": "Article already exists",
             "content": {
                 "application/json": {
-                    "example": {
-                        "description": "Article already exists"
-                    }
+                    "example": {"description": "Article already exists"}
                 }
-            }
-        }
+            },
+        },
     },
-    tags=["storage"]
+    tags=["storage"],
 )
 async def add_accessory(
-    data: schemas.CreateNewAccessoryRequest,
+    article: int = Form(...),
+    name: str = Form(...),
+    type: str = Form(...),
+    width: int = Form(...),
+    length: Optional[int] = Form(...),
+    weight: Optional[int] = Form(...),
+    price: float = Form(...),
     user: models.User = Depends(manager),
+    image: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
     same_article = (
         db.query(models.Accessory)
-        .filter(models.Accessory.article == data.article)
+        .filter(models.Accessory.article == article)
         .one_or_none()
     )
     if same_article is not None:
         raise exceptions.ArticleAlreadyExists
-    new_accessory = models.Accessory(**data.dict())
+
+    image_filename = await utils.save_file(image)
+
+    new_accessory = models.Accessory(
+        article=article,
+        name=name,
+        type=type,
+        width=width,
+        length=length,
+        weight=weight,
+        price=price,
+        image=image_filename,
+    )
     db.add(new_accessory)
     db.commit()
     db.flush()
@@ -113,41 +130,54 @@ async def add_accessory(
     description="По факту добавить новый артикул и ассоциированные с ним данные",
     responses={
         200: {
-           "description": "OK",
-           "content": {
-               "application/json": {
-                   "example": {
-                       "description": "Successfully created new cloth"
-                   }
-               }
-           }
+            "description": "OK",
+            "content": {
+                "application/json": {
+                    "example": {"description": "Successfully created new cloth"}
+                }
+            },
         },
         409: {
             "description": "Article already exists",
             "content": {
                 "application/json": {
-                    "example": {
-                        "description": "Article already exists"
-                    }
+                    "example": {"description": "Article already exists"}
                 }
-            }
-        }
+            },
+        },
     },
-    tags=["storage"]
+    tags=["storage"],
 )
 async def add_cloth(
-        data: schemas.CreateNewClothRequest,
-        user: models.User = Depends(manager),
-        db: Session = Depends(get_db),
+    article: int = Form(...),
+    color: str = Form(...),
+    print: Optional[str] = Form(...),
+    width: int = Form(...),
+    name: str = Form(...),
+    composition: str = Form(...),
+    price: float = Form(...),
+    image: UploadFile = File(...),
+    user: models.User = Depends(manager),
+    db: Session = Depends(get_db),
 ):
     same_article = (
-        db.query(models.Cloth)
-            .filter(models.Cloth.article == data.article)
-            .one_or_none()
+        db.query(models.Cloth).filter(models.Cloth.article == article).one_or_none()
     )
     if same_article is not None:
         raise exceptions.ArticleAlreadyExists
-    new_cloth = models.Cloth(**data.dict())
+
+    image_filename = await utils.save_file(image)
+
+    new_cloth = models.Cloth(
+        article=article,
+        color=color,
+        print=print,
+        width=width,
+        name=name,
+        composition=composition,
+        price=price,
+        image=image_filename,
+    )
     db.add(new_cloth)
     db.commit()
     db.flush()

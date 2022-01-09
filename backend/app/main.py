@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from fastapi_login import LoginManager
 
 from .db import engine
@@ -17,6 +18,8 @@ manager = LoginManager(SECRET, "/api/v1/login")
 from . import auth
 from . import materials
 from . import orders
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 if __name__ == "__main__":

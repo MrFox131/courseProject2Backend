@@ -18,6 +18,8 @@ services:
       - .env
     networks:
       - delivery_system
+    volumes:
+      - static:/code/static
     ports:
       - "80:80"
 
@@ -26,3 +28,4 @@ networks:
 
 volumes:
   db_data:
+  static:
