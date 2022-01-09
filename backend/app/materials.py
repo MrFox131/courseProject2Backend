@@ -95,7 +95,7 @@ async def add_accessory(
         .filter(models.Accessory.article == data.article)
         .one_or_none()
     )
-    if same_article is None:
+    if same_article is not None:
         raise exceptions.ArticleAlreadyExists
     new_accessory = models.Accessory(**data.dict())
     db.add(new_accessory)
@@ -145,7 +145,7 @@ async def add_cloth(
             .filter(models.Cloth.article == data.article)
             .one_or_none()
     )
-    if same_article is None:
+    if same_article is not None:
         raise exceptions.ArticleAlreadyExists
     new_cloth = models.Cloth(**data.dict())
     db.add(new_cloth)
