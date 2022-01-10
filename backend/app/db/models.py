@@ -50,7 +50,7 @@ class Cloth(Base):
     print = Column(String, nullable=True)
     image = Column(String, nullable=True)
     composition = Column(Text)
-    width = Column(Integer)
+    width = Column(Float)
     price = Column(Numeric(10, 2))
     base_unit = Column(Integer, ForeignKey("units.id"))
 
@@ -60,7 +60,7 @@ class ClothStorage(Base):
 
     number = Column(Integer, primary_key=True)
     article = Column(Integer, ForeignKey("clothes.article"), primary_key=True)
-    length = Column(Integer)
+    length = Column(Float)
 
 
 class Product(Base):

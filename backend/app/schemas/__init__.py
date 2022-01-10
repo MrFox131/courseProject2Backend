@@ -13,7 +13,7 @@ class Cloth(BaseModel):
     print: Optional[str]
     image: Optional[str]
     composition: str
-    width: int
+    width: float
     price: float
 
     class Config:
@@ -23,7 +23,7 @@ class Cloth(BaseModel):
 class ClothStorage(BaseModel):
     number: int
     article: int
-    length: int
+    length: float
 
     class Config:
         orm_mode = True
