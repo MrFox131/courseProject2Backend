@@ -37,7 +37,7 @@ async def get_accessories(
     tags=["storage"],
 )
 async def get_cloth_packs(
-    article: int = Depends(), user: models.User = Depends(manager), db: Session = Depends(get_db)
+    article: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
 ):
     return (
         db.query(models.ClothStorage)
@@ -52,7 +52,7 @@ async def get_cloth_packs(
     tags=["storage"],
 )
 async def get_accessory_packs(
-    article: int = Depends(), user: models.User = Depends(), db: Session = Depends(get_db)
+    article: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
 ):
     return (
         db.query(models.AccessoriesStorage)
