@@ -1,3 +1,4 @@
+import json
 import math
 from typing import List, Optional
 
@@ -36,7 +37,7 @@ async def get_accessories(
     tags=["storage"],
 )
 async def get_cloth_packs(
-    article: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
+    article: int = Depends(), user: models.User = Depends(manager), db: Session = Depends(get_db)
 ):
     return (
         db.query(models.ClothStorage)
@@ -51,7 +52,7 @@ async def get_cloth_packs(
     tags=["storage"],
 )
 async def get_accessory_packs(
-    article: int, user: models.User = Depends(), db: Session = Depends(get_db)
+    article: int = Depends(), user: models.User = Depends(), db: Session = Depends(get_db)
 ):
     return (
         db.query(models.AccessoriesStorage)
@@ -251,3 +252,38 @@ async def accessory_decommission(
     return JSONResponse(
         status_code=200, content={"description": "Decommissioned successfully"}
     )
+
+
+@app.post("/api/v1/product", description="Добавляем новую продукцию")
+async def add_new_product(article: int = Form(...), name: str = Form(...), price: float = Form(...), width: int = Form(...), length: int = Form(...), comment: str = Form(...), image: UploadFile = File(...), cloth_articles: str = Form(...), accessory_articles: str = Form(...), user: models.User = Depends(manager), db: Session = Depends(get_db)):
+    same_article = db.query(models.Product).filter(models.Product.article == article).one_or_none()
+    if same_article is not None:
+        raise exceptions.ArticleAlreadyExists
+
+    new_product: models.Product = models.Product()
+    new_product.article = article
+    new_product.name = name
+    new_product.length = length
+    new_product.width = width
+    image_filename = utils.save_file(image)
+    new_product.image = image_filename
+    new_product.comment = comment
+    new_product.price = price
+    db.add(new_product)
+
+    cloth_articles = json.loads(cloth_articles)
+    accessory_articles = json.loads(accessory_articles)
+
+    for cloth in cloth_articles:
+        db.add(models.ProductClothRelations(product_articl=new_product.article, cloth_article=cloth))
+
+    for accessory in accessory_articles:
+        db.add(models.ProductClothRelations(product_articl=new_product.article, accessory_article=accessory))
+
+    db.commit()
+    db.flush()
+
+    return JSONResponse(
+        status_code=200, content={"description": "Product created successfully"}
+    )
+

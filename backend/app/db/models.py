@@ -10,6 +10,7 @@ from sqlalchemy import (
     Numeric,
     Text,
     Float,
+    Boolean
 )
 
 from sqlalchemy.sql import func
@@ -68,11 +69,14 @@ class Product(Base):
 
     article = Column(Integer, primary_key=True)
 
+    parent = Column(Integer, ForeignKey("products.article"), nullable=True)
+    current_active = Column(Boolean, default=True)
     name = Column(String)
     width = Column(Integer)
     length = Column(Integer)
     image = Column(String, nullable=True)
     comment = Column(Text, nullable=True)
+    price = Column(Numeric(10, 2))
 
 
 class User(Base):
