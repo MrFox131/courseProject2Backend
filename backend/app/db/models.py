@@ -59,7 +59,6 @@ ProductOrderRelations = Table(
 )
 
 
-
 class Unit(Base):
     __tablename__ = "units"
 
@@ -163,5 +162,3 @@ class Order(Base):
 class OrderWithUsers(Order):
     customer = relationship(User, foreign_keys=[Order.customer_id])
     manager = relationship(User, foreign_keys=[Order.manager_id])
-
-
