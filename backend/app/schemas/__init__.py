@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import datetime
 from typing import Optional
 
@@ -56,7 +58,6 @@ class PlainLoginRequest(BaseModel):
 
 
 class AccessoryStorage(BaseModel):
-    batch: int
     article: int
     count: int
 
@@ -77,8 +78,10 @@ class Order(BaseModel):
     creation_date: datetime.datetime
     completion_date: Optional[datetime.datetime]
     stage: models.OrderStage
-    manager: int
+    manager: UserModel
+    customer: UserModel
     cost: float
+
 
     class Config:
         orm_mode = True
@@ -102,3 +105,19 @@ class CreateNewClothRequest(BaseModel):
     name: str
     composition: str
     price: float
+
+
+class Product(BaseModel):
+
+    id: int
+    article: int
+    name: str
+    width: int
+    length: int
+    image: Optional[str]
+    comment: Optional[str]
+    price: float
+    previous: Optional['Product']
+
+    class Config:
+        orm_mode = True

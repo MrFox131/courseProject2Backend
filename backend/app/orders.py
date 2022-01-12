@@ -17,4 +17,4 @@ from . import schemas
     "/api/v1/order", response_model=List[schemas.Order], tags=["orders"]
 )  # TODO:Filter orders in responsibility with user role
 async def order(user: models.User = Depends(manager), db: Session = Depends(get_db)):
-    return db.query(models.Order).all()
+    return db.query(models.OrderWithUsers).all()

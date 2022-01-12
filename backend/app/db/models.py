@@ -14,8 +14,10 @@ from sqlalchemy import (
 )
 
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 
 from . import Base
+
 
 import enum
 
@@ -67,9 +69,11 @@ class ClothStorage(Base):
 class Product(Base):
     __tablename__ = "products"
 
-    article = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True, unique=True)
+    article = Column(Integer)
 
-    parent = Column(Integer, ForeignKey("products.article"), nullable=True)
+    # parent = Column(Integer, ForeignKey("products.id"), nullable=True)
+    next_id = Column(Integer, ForeignKey("products.id"), nullable=True)
     current_active = Column(Boolean, default=True)
     name = Column(String)
     width = Column(Integer)
@@ -77,6 +81,10 @@ class Product(Base):
     image = Column(String, nullable=True)
     comment = Column(Text, nullable=True)
     price = Column(Numeric(10, 2))
+
+
+class ProductWithPrevious(Product):
+    previous = relationship('ProductWithPrevious', uselist=False)
 
 
 class User(Base):
@@ -107,7 +115,6 @@ class Accessory(Base):
 class AccessoriesStorage(Base):
     __tablename__ = "accessories_storage"
 
-    batch = Column(Integer, primary_key=True)
     article = Column(Integer, ForeignKey("accessories.article"), primary_key=True)
     count = Column(Integer)
 
@@ -119,28 +126,33 @@ class Order(Base):
     creation_date = Column(DateTime, server_default=func.now())
     completion_date = Column(DateTime, nullable=True)
     stage = Column(Enum(OrderStage))
-    customer = Column(Integer, ForeignKey("users.id"))
-    manager = Column(Integer, ForeignKey("users.id"), nullable=True)
+    customer_id = Column(Integer, ForeignKey("users.id"))
+    manager_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     cost = Column(Numeric(10, 2), nullable=True)
+
+
+class OrderWithUsers(Order):
+    customer = relationship(User, foreign_keys=[Order.customer_id])
+    manager = relationship(User, foreign_keys=[Order.manager_id])
 
 
 ProductAccessoryRelations = Table(
     "product_accessory_relations",
     Base.metadata,
-    Column("product_article", ForeignKey("products.article"), primary_key=True),
+    Column("product_id", ForeignKey("products.id"), primary_key=True),
     Column("accessory_article", ForeignKey("accessories.article"), primary_key=True),
 )
 
 ProductClothRelations = Table(
     "product_cloth_relations",
     Base.metadata,
-    Column("product_article", ForeignKey("products.article"), primary_key=True),
+    Column("product_id", ForeignKey("products.id"), primary_key=True),
     Column("cloth_article", ForeignKey("clothes.article"), primary_key=True),
 )
 
 ProductOrderRelations = Table(
     "product_order_relations",
     Base.metadata,
-    Column("product_article", ForeignKey("products.article"), primary_key=True),
+    Column("product_id", ForeignKey("products.id"), primary_key=True),
     Column("order_id", ForeignKey("orders.id"), primary_key=True),
 )
