@@ -17,14 +17,14 @@ from . import utils
 
 @app.get("/api/v1/cloth", response_model=List[schemas.Cloth], tags=["storage"])
 async def get_clothes(
-        user: models.User = Depends(manager), db: Session = Depends(get_db)
+    user: models.User = Depends(manager), db: Session = Depends(get_db)
 ):
     return db.query(models.Cloth).all()
 
 
 @app.get("/api/v1/accessory", response_model=List[schemas.Accessory], tags=["storage"])
 async def get_accessories(
-        user: models.User = Depends(manager), db: Session = Depends(get_db)
+    user: models.User = Depends(manager), db: Session = Depends(get_db)
 ):
     return db.query(models.Accessory).all()
 
@@ -35,12 +35,12 @@ async def get_accessories(
     tags=["storage"],
 )
 async def get_cloth_packs(
-        article: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
+    article: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
 ):
     return (
         db.query(models.ClothStorage)
-            .filter(models.ClothStorage.article == article)
-            .all()
+        .filter(models.ClothStorage.article == article)
+        .all()
     )
 
 
@@ -50,17 +50,15 @@ async def get_cloth_packs(
     tags=["storage"],
 )
 async def get_accessory_packs(
-        article: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
+    article: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
 ):
     accessory = (
-        db.query(models.AccessoriesStorage) \
-            .filter(models.AccessoriesStorage.article == article)
-            .one_or_none()
+        db.query(models.AccessoriesStorage)
+        .filter(models.AccessoriesStorage.article == article)
+        .one_or_none()
     )
 
-    return (
-        accessory
-    )
+    return accessory
 
 
 @app.post(
@@ -88,21 +86,21 @@ async def get_accessory_packs(
     tags=["storage"],
 )
 async def add_accessory(
-        article: int = Form(...),
-        name: str = Form(...),
-        type: str = Form(...),
-        width: int = Form(...),
-        length: Optional[int] = Form(...),
-        weight: Optional[int] = Form(...),
-        price: float = Form(...),
-        user: models.User = Depends(manager),
-        image: UploadFile = File(...),
-        db: Session = Depends(get_db),
+    article: int = Form(...),
+    name: str = Form(...),
+    type: str = Form(...),
+    width: int = Form(...),
+    length: Optional[int] = Form(...),
+    weight: Optional[int] = Form(...),
+    price: float = Form(...),
+    user: models.User = Depends(manager),
+    image: UploadFile = File(...),
+    db: Session = Depends(get_db),
 ):
     same_article = (
         db.query(models.Accessory)
-            .filter(models.Accessory.article == article)
-            .one_or_none()
+        .filter(models.Accessory.article == article)
+        .one_or_none()
     )
     if same_article is not None:
         raise exceptions.ArticleAlreadyExists
@@ -153,16 +151,16 @@ async def add_accessory(
     tags=["storage"],
 )
 async def add_cloth(
-        article: int = Form(...),
-        color: str = Form(...),
-        print: Optional[str] = Form(...),
-        width: float = Form(...),
-        name: str = Form(...),
-        composition: str = Form(...),
-        price: float = Form(...),
-        image: UploadFile = File(...),
-        user: models.User = Depends(manager),
-        db: Session = Depends(get_db),
+    article: int = Form(...),
+    color: str = Form(...),
+    print: Optional[str] = Form(...),
+    width: float = Form(...),
+    name: str = Form(...),
+    composition: str = Form(...),
+    price: float = Form(...),
+    image: UploadFile = File(...),
+    user: models.User = Depends(manager),
+    db: Session = Depends(get_db),
 ):
     same_article = (
         db.query(models.Cloth).filter(models.Cloth.article == article).one_or_none()
@@ -193,18 +191,18 @@ async def add_cloth(
 
 @app.patch("/api/v1/cloth/{article}/{number}", tags=["storage"])
 async def cloth_decommission(
-        article: int,
-        number: int,
-        length: float,
-        user: models.User = Depends(manager),
-        db: Session = Depends(get_db),
+    article: int,
+    number: int,
+    length: float,
+    user: models.User = Depends(manager),
+    db: Session = Depends(get_db),
 ):
     batch: Optional[models.ClothStorage] = (
         db.query(models.ClothStorage)
-            .filter(
+        .filter(
             models.ClothStorage.article == article, models.ClothStorage.number == number
         )
-            .one_or_none()
+        .one_or_none()
     )
     if batch is None:
         raise exceptions.InvalidClothStorage
@@ -213,7 +211,7 @@ async def cloth_decommission(
         raise exceptions.InsufficientClothLength
 
     batch.length -= length
-    if math.fabs(batch.length) < 1E-10:
+    if math.fabs(batch.length) < 1e-10:
         db.delete(batch)
     db.commit()
     db.flush()
@@ -225,19 +223,19 @@ async def cloth_decommission(
 
 @app.patch("/api/v1/accessory/{article}/{number}", tags=["storage"])
 async def accessory_decommission(
-        article: int,
-        number: int,
-        quantity: int,
-        user: models.User = Depends(manager),
-        db: Session = Depends(get_db),
+    article: int,
+    number: int,
+    quantity: int,
+    user: models.User = Depends(manager),
+    db: Session = Depends(get_db),
 ):
     batch: Optional[models.AccessoriesStorage] = (
         db.query(models.AccessoriesStorage)
-            .filter(
+        .filter(
             models.AccessoriesStorage.article == article,
             models.AccessoriesStorage.number == number,
         )
-            .one_or_none()
+        .one_or_none()
     )
     if batch is None:
         raise exceptions.InvalidClothStorage
@@ -257,13 +255,26 @@ async def accessory_decommission(
 
 
 @app.post("/api/v1/product", description="Добавляем новую продукцию")
-async def add_new_product(previous_id: Optional[int] = Form(None), article: int = Form(...), name: str = Form(...), price: float = Form(...),
-                          width: int = Form(...), length: int = Form(...), comment: str = Form(...),
-                          image: UploadFile = File(...), cloth_articles: str = Form(...),
-                          accessory_articles: str = Form(...), user: models.User = Depends(manager),
-                          db: Session = Depends(get_db)):
+async def add_new_product(
+    previous_id: Optional[int] = Form(None),
+    article: int = Form(...),
+    name: str = Form(...),
+    price: float = Form(...),
+    width: int = Form(...),
+    length: int = Form(...),
+    comment: str = Form(...),
+    image: UploadFile = File(...),
+    cloth_articles: str = Form(...),
+    accessory_articles: str = Form(...),
+    user: models.User = Depends(manager),
+    db: Session = Depends(get_db),
+):
     if previous_id is None:
-        same_article = db.query(models.Product).filter(models.Product.article == article).one_or_none()
+        same_article = (
+            db.query(models.Product)
+            .filter(models.Product.article == article)
+            .one_or_none()
+        )
         if same_article is not None:
             raise exceptions.ArticleAlreadyExists
 
@@ -280,7 +291,11 @@ async def add_new_product(previous_id: Optional[int] = Form(None), article: int 
     db.flush()
     db.refresh(new_product)
     if previous_id is not None:
-        prev: models.Product = db.query(models.Product).filter(models.Product.id == previous_id, models.Product.article == article).one_or_none()
+        prev: models.Product = (
+            db.query(models.Product)
+            .filter(models.Product.id == previous_id, models.Product.article == article)
+            .one_or_none()
+        )
         if prev is None:
             raise exceptions.ArticleDoesNotExist
         prev.current_active = False
@@ -293,10 +308,18 @@ async def add_new_product(previous_id: Optional[int] = Form(None), article: int 
     accessory_articles = json.loads(accessory_articles)
 
     for cloth in cloth_articles:
-        db.execute(models.ProductClothRelations.insert().values(product_id=new_product.id, cloth_article=cloth))
+        db.execute(
+            models.ProductClothRelations.insert().values(
+                product_id=new_product.id, cloth_article=cloth
+            )
+        )
 
     for accessory in accessory_articles:
-        db.execute(models.ProductAccessoryRelations.insert().values(product_id=new_product.id, accessory_article=accessory))
+        db.execute(
+            models.ProductAccessoryRelations.insert().values(
+                product_id=new_product.id, accessory_article=accessory
+            )
+        )
 
     db.commit()
     db.flush()
@@ -308,6 +331,8 @@ async def add_new_product(previous_id: Optional[int] = Form(None), article: int 
 
 @app.get("/api/v1/product", response_model=List[schemas.Product])
 async def get_products(db: Session = Depends(get_db)):
-    smth: List[models.ProductWithPrevious] = db.query(models.ProductWithPrevious).filter(models.ProductWithPrevious.current_active == True).all()
-    return db.query(models.ProductWithPrevious).filter(models.ProductWithPrevious.current_active == True).all()
-
+    return (
+        db.query(models.ProductWithPreviousAccessoryCloth)
+        .filter(models.ProductWithPreviousAccessoryCloth.current_active == True)
+        .all()
+    )

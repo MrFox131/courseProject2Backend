@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import datetime
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel
 
@@ -82,7 +82,6 @@ class Order(BaseModel):
     customer: UserModel
     cost: float
 
-
     class Config:
         orm_mode = True
 
@@ -117,7 +116,9 @@ class Product(BaseModel):
     image: Optional[str]
     comment: Optional[str]
     price: float
-    previous: Optional['Product']
+    clothes: List[Cloth]
+    accessories: List[Accessory]
+    previous: Optional["Product"]
 
     class Config:
         orm_mode = True

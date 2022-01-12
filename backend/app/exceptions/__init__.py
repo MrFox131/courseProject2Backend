@@ -59,44 +59,33 @@ async def article_already_exists(request: Request, ex: ArticleAlreadyExists):
 @app.exception_handler(InvalidClothStorage)
 async def invalid_cloth_storage(request: Request, ex: InvalidClothStorage):
     return JSONResponse(
-        status_code=404, content={
-            "description": "No such article or number"
-        }
+        status_code=404, content={"description": "No such article or number"}
     )
 
 
 @app.exception_handler(InsufficientClothLength)
 async def insufficient_cloth_length(request: Request, ex: InsufficientClothLength):
     return JSONResponse(
-        status_code=409,
-        content={"description": "Insufficient cloth length"}
+        status_code=409, content={"description": "Insufficient cloth length"}
     )
 
 
 @app.exception_handler(InvalidAccessoryStorage)
 async def invalid_cloth_storage(request: Request, ex: InvalidAccessoryStorage):
     return JSONResponse(
-        status_code=404, content={
-            "description": "No such article or number"
-        }
+        status_code=404, content={"description": "No such article or number"}
     )
 
 
 @app.exception_handler(InsufficientAccessoryCount)
 async def insufficient_cloth_length(request: Request, ex: InsufficientAccessoryCount):
     return JSONResponse(
-        status_code=409,
-        content={"description": "Insufficient accessory count"}
+        status_code=409, content={"description": "Insufficient accessory count"}
     )
 
 
 @app.exception_handler(ArticleDoesNotExist)
 async def article_does_not_exist(request: Request, ex: ArticleDoesNotExist):
     return JSONResponse(
-        status_code=404,
-        content={
-            "description": "Article does not exist"
-        }
+        status_code=404, content={"description": "Article does not exist"}
     )
-
-

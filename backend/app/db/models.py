@@ -10,7 +10,7 @@ from sqlalchemy import (
     Numeric,
     Text,
     Float,
-    Boolean
+    Boolean,
 )
 
 from sqlalchemy.sql import func
@@ -35,6 +35,29 @@ class OrderStage(enum.Enum):
     accepted = enum.auto()
     rejected = enum.auto()
     done = enum.auto()
+
+
+ProductAccessoryRelations = Table(
+    "product_accessory_relations",
+    Base.metadata,
+    Column("product_id", ForeignKey("products.id"), primary_key=True),
+    Column("accessory_article", ForeignKey("accessories.article"), primary_key=True),
+)
+
+ProductClothRelations = Table(
+    "product_cloth_relations",
+    Base.metadata,
+    Column("product_id", ForeignKey("products.id"), primary_key=True),
+    Column("cloth_article", ForeignKey("clothes.article"), primary_key=True),
+)
+
+ProductOrderRelations = Table(
+    "product_order_relations",
+    Base.metadata,
+    Column("product_id", ForeignKey("products.id"), primary_key=True),
+    Column("order_id", ForeignKey("orders.id"), primary_key=True),
+)
+
 
 
 class Unit(Base):
@@ -84,7 +107,13 @@ class Product(Base):
 
 
 class ProductWithPrevious(Product):
-    previous = relationship('ProductWithPrevious', uselist=False)
+    previous = relationship("ProductWithPrevious", uselist=False)
+
+
+class ProductWithPreviousAccessoryCloth(Product):
+    previous = relationship("ProductWithPreviousAccessoryCloth", uselist=False)
+    accessories = relationship("Accessory", secondary=ProductAccessoryRelations)
+    clothes = relationship("Cloth", secondary=ProductClothRelations)
 
 
 class User(Base):
@@ -136,23 +165,3 @@ class OrderWithUsers(Order):
     manager = relationship(User, foreign_keys=[Order.manager_id])
 
 
-ProductAccessoryRelations = Table(
-    "product_accessory_relations",
-    Base.metadata,
-    Column("product_id", ForeignKey("products.id"), primary_key=True),
-    Column("accessory_article", ForeignKey("accessories.article"), primary_key=True),
-)
-
-ProductClothRelations = Table(
-    "product_cloth_relations",
-    Base.metadata,
-    Column("product_id", ForeignKey("products.id"), primary_key=True),
-    Column("cloth_article", ForeignKey("clothes.article"), primary_key=True),
-)
-
-ProductOrderRelations = Table(
-    "product_order_relations",
-    Base.metadata,
-    Column("product_id", ForeignKey("products.id"), primary_key=True),
-    Column("order_id", ForeignKey("orders.id"), primary_key=True),
-)
