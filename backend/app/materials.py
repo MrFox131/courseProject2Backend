@@ -1,7 +1,10 @@
 import json
 import math
+import secrets
+from pathlib import Path
 from typing import List, Optional, Dict
 
+from borb.pdf.canvas.layout.layout_element import Alignment
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
@@ -14,6 +17,18 @@ from .main import app, manager
 from .db import models, get_db
 from . import schemas
 from . import utils
+
+from decimal import Decimal
+
+from borb.pdf.canvas.layout.page_layout.multi_column_layout import SingleColumnLayout
+from borb.pdf.canvas.layout.page_layout.page_layout import PageLayout
+from borb.pdf.canvas.layout.table.fixed_column_width_table import FixedColumnWidthTable
+from borb.pdf.canvas.layout.text.paragraph import Paragraph
+from borb.pdf.document import Document
+from borb.pdf.page.page import Page
+from borb.pdf.pdf import PDF
+from borb.pdf.canvas.font.simple_font.true_type_font import TrueTypeFont
+from borb.pdf.canvas.font.font import Font
 
 
 @app.get("/api/v1/cloth", response_model=List[schemas.Cloth], tags=["storage"])
@@ -334,7 +349,7 @@ async def add_new_product(
     "/api/v1/product",
     response_model=List[schemas.Product],
     response_model_exclude={"previous"},
-    tags = ["products"]
+    tags=["products"],
 )
 async def get_products(db: Session = Depends(get_db)):
     return (
@@ -348,7 +363,7 @@ async def get_products(db: Session = Depends(get_db)):
     "/api/v1/product/{article}",
     response_model=Optional[schemas.Product],
     response_model_exclude={"previous"},
-    tags=["products"]
+    tags=["products"],
 )
 async def get_product_by_article(article: int, db: Session = Depends(get_db)):
     return (
@@ -365,19 +380,32 @@ async def get_product_by_article(article: int, db: Session = Depends(get_db)):
     "/api/v1/product/{article}/previous",
     response_model=List[schemas.Product],
     response_model_exclude={"previous"},
-    tags=["products"]
+    tags=["products"],
 )
 async def get_parents_by_article(article: int, db: Session = Depends(get_db)):
-    answer: List[models.ProductWithPreviousAccessoryCloth] = [db.query(models.ProductWithPreviousAccessoryCloth).filter(
-        models.ProductWithPreviousAccessoryCloth.article == article,
-        models.ProductWithPreviousAccessoryCloth.current_active == True).one_or_none()]
+    answer: List[models.ProductWithPreviousAccessoryCloth] = [
+        db.query(models.ProductWithPreviousAccessoryCloth)
+        .filter(
+            models.ProductWithPreviousAccessoryCloth.article == article,
+            models.ProductWithPreviousAccessoryCloth.current_active == True,
+        )
+        .one_or_none()
+    ]
     if answer[0] is None:
         raise exceptions.ArticleDoesNotExist
 
     exists = True
 
     while exists:
-        new_parent = db.query(models.ProductWithPreviousAccessoryCloth).filter(models.ProductWithPreviousAccessoryCloth.article == article, models.ProductWithPreviousAccessoryCloth.next_id == answer[len(answer)-1].id).one_or_none()
+        new_parent = (
+            db.query(models.ProductWithPreviousAccessoryCloth)
+            .filter(
+                models.ProductWithPreviousAccessoryCloth.article == article,
+                models.ProductWithPreviousAccessoryCloth.next_id
+                == answer[len(answer) - 1].id,
+            )
+            .one_or_none()
+        )
         if new_parent is None:
             exists = False
             continue
@@ -389,38 +417,119 @@ async def get_parents_by_article(article: int, db: Session = Depends(get_db)):
 
 
 @app.post("/api/v1/goods_arrival", tags=["storage"])
-async def goods_arrival(accessories: Optional[str] = Form(None), clothes: Optional[str] = Form(None), user: models.User = Depends(manager), db: Session = Depends(get_db)):
+async def goods_arrival(
+    accessories: Optional[str] = Form(None),
+    clothes: Optional[str] = Form(None),
+    user: models.User = Depends(manager),
+    db: Session = Depends(get_db),
+):
+    doc: Document = Document()
+    page: Page = Page()
+    doc.append_page(page)
+    counter = 1
+    font_path: Path = Path(__file__).parent.parent / "tnr.ttf"
+    print(font_path)
+    font: Font = TrueTypeFont.true_type_font_from_file(font_path)
+
+    layout: PageLayout = SingleColumnLayout(page)
+    layout.add(Paragraph("от «___» __________________ 2022г.", font=font, horizontal_alignment=Alignment.RIGHT))
+    layout.add(Paragraph("НАКЛАДНАЯ  № _____", font=font, text_alignment=Alignment.CENTERED))
+    layout.add(Paragraph("От кого:_____________________________", font=font))
+    layout.add(Paragraph("Кому:_______________________________", font=font))
+    table = (
+        FixedColumnWidthTable(
+            number_of_columns=6,
+            number_of_rows=10,
+            column_widths=[
+                Decimal(1),
+                Decimal(4),
+                Decimal(2),
+                Decimal(2),
+                Decimal(2),
+                Decimal(2),
+            ],
+        )
+        .add(Paragraph("№\nп / п", font=font))
+        .add(Paragraph("Наименование", font=font))
+        .add(Paragraph("Единица\nизмерения", font=font))
+        .add(Paragraph("Количество", font=font))
+        .add(Paragraph("Цена (руб.)", font=font))
+        .add(Paragraph("Стоимость (руб.)", font=font))
+    )
+
     if accessories is not None:
         accessories_json: Dict[int, int] = json.loads(accessories)
 
         for accessory, count in accessories_json.items():
-            old_accessory: Optional[models.AccessoriesStorage] = db.query(models.AccessoriesStorage).filter(models.AccessoriesStorage.article == accessory).one_or_none()
+            accessory_as_is: models.Accessory = (
+                db.query(models.Accessory)
+                .filter(models.Accessory.article == accessory)
+                .one()
+            )
+            table.add(Paragraph(str(counter), font=font))
+            counter += 1
+            table.add(
+                Paragraph(accessory_as_is.name + " " + str(accessory_as_is.article))
+            )
+            table.add(Paragraph("штуки", font=font))
+            table.add(Paragraph(str(count), font=font))
+            table.add(Paragraph(str(accessory_as_is.price), font=font))
+            table.add(Paragraph(str(accessory_as_is.price * count), font=font))
+            old_accessory: Optional[models.AccessoriesStorage] = (
+                db.query(models.AccessoriesStorage)
+                .filter(models.AccessoriesStorage.article == accessory)
+                .one_or_none()
+            )
             if old_accessory is None:
                 db.add(models.AccessoriesStorage(article=accessory, count=count))
             else:
                 old_accessory.count += count
 
-
     cloth_infos = []
     if clothes is not None:
         clothes_json = json.loads(clothes)
-        for cloth, length in clothes_json.items():
-            new_id_obj = db.query(func.max(models.ClothStorage.number).label("max_id")).filter(models.ClothStorage.article == cloth).scalar()
-            new_id = 1
-            if new_id_obj is not None:
-                print(new_id_obj)
-                new_id = new_id_obj + 1
-            cloth = models.ClothStorage(article=cloth, length=length, number = new_id)
-            db.add(cloth)
-            db.flush()
-            db.refresh(cloth)
-            cloth_infos.append({
-                "number": cloth.number,
-                "article": cloth.article,
-                "length": length
-            })
+        for cloth, packs in clothes_json.items():
+            for length in packs:
+                cloth_as_is: models.Cloth = db.query(models.Cloth).filter(models.Cloth.article == cloth).one()
+
+                table.add(Paragraph(str(counter), font=font))
+                counter += 1
+                table.add(
+                    Paragraph(cloth_as_is.name + " " + str(cloth_as_is.article))
+                )
+                table.add(Paragraph("метры", font=font))
+                table.add(Paragraph(str(length), font=font))
+                table.add(Paragraph(str(cloth_as_is.price), font=font))
+                table.add(Paragraph(str(float(cloth_as_is.price) * length), font=font))
+
+                new_id_obj = (
+                    db.query(func.max(models.ClothStorage.number).label("max_id"))
+                    .filter(models.ClothStorage.article == cloth)
+                    .scalar()
+                )
+                new_id = 1
+                if new_id_obj is not None:
+                    print(new_id_obj)
+                    new_id = new_id_obj + 1
+                cloth_m = models.ClothStorage(article=cloth, length=length, number=new_id)
+                db.add(cloth_m)
+                db.flush()
+                db.refresh(cloth_m)
+                cloth_infos.append(
+                    {"number": cloth_m.number, "article": cloth_m.article, "length": length}
+                )
 
     db.commit()
 
-    return cloth_infos
+    layout.add(
+        table.set_padding_on_all_cells(Decimal(3), Decimal(3), Decimal(3), Decimal(3))
+    )
+    layout.add(Paragraph("Сдал(Ф.И.О., подпись):_____________________", font=font))
+    layout.add(Paragraph("Принял(Ф.И.О., подпись):______________________", font=font))
 
+    filename= "static/" + secrets.token_hex(nbytes=16) + ".pdf"
+    with open(filename, "wb") as out_file_handle:
+        PDF.dumps(out_file_handle, doc)
+
+    cloth_infos.append(filename)
+    return cloth_infos
