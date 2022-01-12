@@ -1,8 +1,9 @@
 import json
 import math
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
 
 from fastapi import Depends
 from fastapi.responses import JSONResponse
@@ -385,3 +386,41 @@ async def get_parents_by_article(article: int, db: Session = Depends(get_db)):
     answer = answer[1:]
 
     return answer
+
+
+@app.post("/api/v1/goods_arrival", tags=["storage"])
+async def goods_arrival(accessories: Optional[str] = Form(None), clothes: Optional[str] = Form(None), user: models.User = Depends(manager), db: Session = Depends(get_db)):
+    if accessories is not None:
+        accessories_json: Dict[int, int] = json.loads(accessories)
+
+        for accessory, count in accessories_json.items():
+            old_accessory: Optional[models.AccessoriesStorage] = db.query(models.AccessoriesStorage).filter(models.AccessoriesStorage.article == accessory).one_or_none()
+            if old_accessory is None:
+                db.add(models.AccessoriesStorage(article=accessory, count=count))
+            else:
+                old_accessory.count += count
+
+
+    cloth_infos = []
+    if clothes is not None:
+        clothes_json = json.loads(clothes)
+        for cloth, length in clothes_json.items():
+            new_id_obj = db.query(func.max(models.ClothStorage.number).label("max_id")).filter(models.ClothStorage.article == cloth).scalar()
+            new_id = 1
+            if new_id_obj is not None:
+                print(new_id_obj)
+                new_id = new_id_obj + 1
+            cloth = models.ClothStorage(article=cloth, length=length, number = new_id)
+            db.add(cloth)
+            db.flush()
+            db.refresh(cloth)
+            cloth_infos.append({
+                "number": cloth.number,
+                "article": cloth.article,
+                "length": length
+            })
+
+    db.commit()
+
+    return cloth_infos
+

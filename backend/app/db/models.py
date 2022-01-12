@@ -130,7 +130,7 @@ class User(Base):
 class Accessory(Base):
     __tablename__ = "accessories"
 
-    article = Column(Integer, primary_key=True)
+    article = Column(Integer, primary_key=True, )
     name = Column(String)
     type = Column(String)
     width = Column(Integer)
