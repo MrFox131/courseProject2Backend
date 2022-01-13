@@ -2,6 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi_login import LoginManager
+from fastapi.middleware.cors import CORSMiddleware
 
 from .db import engine
 from .db import models as models
@@ -14,6 +15,17 @@ f14b0bad7e4b1faab16debcab276930365faa28d2127bcc7bb974869fe371a9b6b2d082e97321fcc
 # manager = LoginManager(SECRET, "/api/v1/login", use_cookie=True)
 manager = LoginManager(SECRET, "/api/v1/login")
 
+origins = [
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 from . import auth
 from . import materials
