@@ -1,5 +1,5 @@
 import json
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple
 
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
@@ -172,12 +172,45 @@ async def get_products_by_order_id(
         .filter(models.ProductOrderRelations.order_id == id)
         .all()
     )
-    answer: List[models.ProductWithPreviousAccessoryCloth] = []
+    answer: List[Tuple[models.ProductWithPreviousAccessoryCloth, int]] = []
     for assoc in all_assocs:
         answer.append(
-            db.query(models.ProductWithPreviousAccessoryCloth)
+            ( db.query(models.ProductWithPreviousAccessoryCloth)
             .filter(models.ProductWithPreviousAccessoryCloth.id == assoc.product_id)
-            .one()
+            .one(), assoc.count)
         )
 
     return answer
+    # if user.role == models.UserType.manager:
+    #     order: Optional[models.OrderWithAllInfo] = (
+    #         db.query(models.OrderWithAllInfo)
+    #             .filter(models.OrderWithAllInfo.id == id)
+    #             .one_or_none()
+    #     )
+    #     if order is None or order.manager_id != user.id:
+    #         raise exceptions.InsufficientPrivileges
+    #     answer = []
+    #     for product in order.products:
+    #         for key, info in product:
+    #             answer.append(info)
+    #     return answer
+    # if user.role == models.UserType.customer:
+    #     order: Optional[models.OrderWithAllInfo] = (
+    #         db.query(models.OrderWithAllInfo)
+    #             .filter(models.OrderWithAllInfo.id == id)
+    #             .one_or_none()
+    #     )
+    #     if order is None or order.customer_id != user.id:
+    #         raise exceptions.InsufficientPrivileges
+    #     return order
+    # if user.role == models.UserType.chef:
+    #     order: Optional[models.OrderWithAllInfo] = (
+    #         db.query(models.OrderWithAllInfo)
+    #             .filter(models.OrderWithAllInfo.id == id)
+    #             .one_or_none()
+    #     )
+    #     if order is None:
+    #         raise exceptions.ArticleDoesNotExist
+    #     return order
+    # raise exceptions.InsufficientPrivileges
+
