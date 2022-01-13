@@ -1,5 +1,5 @@
 import json
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional, Tuple, Any
 
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
@@ -172,12 +172,12 @@ async def get_products_by_order_id(
         .filter(models.ProductOrderRelations.order_id == id)
         .all()
     )
-    answer: List[Tuple[models.ProductWithPreviousAccessoryCloth, int]] = []
+    answer: List[Dict[str, Any[models.ProductWithOrders, int]]] = []
     for assoc in all_assocs:
         answer.append(
-            ( db.query(models.ProductWithPreviousAccessoryCloth)
-            .filter(models.ProductWithPreviousAccessoryCloth.id == assoc.product_id)
-            .one(), assoc.count)
+            { "product": db.query(models.ProductWithOrders)
+            .filter(models.ProductWithOrders.id == assoc.product_id)
+            .one(), "count": assoc.count}
         )
 
     return answer
