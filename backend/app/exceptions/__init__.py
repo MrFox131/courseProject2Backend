@@ -35,6 +35,14 @@ class ArticleDoesNotExist(Exception):
     pass
 
 
+class OrderDoesNotExists(Exception):
+    pass
+
+
+class InsufficientPrivileges(Exception):
+    pass
+
+
 @app.exception_handler(UsernameAlreadyExists)
 async def username_already_exists(request: Request, ex: UsernameAlreadyExists):
     return JSONResponse(
@@ -88,4 +96,24 @@ async def insufficient_cloth_length(request: Request, ex: InsufficientAccessoryC
 async def article_does_not_exist(request: Request, ex: ArticleDoesNotExist):
     return JSONResponse(
         status_code=404, content={"description": "Article does not exist"}
+    )
+
+
+@app.exception_handler(OrderDoesNotExists)
+async def order_does_not_exist(request: Request, ex: OrderDoesNotExists):
+    return JSONResponse(
+        status_code=404,
+        content={
+            "description": "Order does not exist"
+        }
+    )
+
+
+@app.exception_handler(InsufficientPrivileges)
+async def insufficient_privileges(request: Request, ex: InsufficientPrivileges):
+    return JSONResponse(
+        status_code=401,
+        content={
+            "description": "Insufficient privileges"
+        }
     )
