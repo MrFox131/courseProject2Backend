@@ -15,9 +15,7 @@ f14b0bad7e4b1faab16debcab276930365faa28d2127bcc7bb974869fe371a9b6b2d082e97321fcc
 # manager = LoginManager(SECRET, "/api/v1/login", use_cookie=True)
 manager = LoginManager(SECRET, "/api/v1/login")
 
-origins = [
-    "*"
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,

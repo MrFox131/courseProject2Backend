@@ -118,6 +118,7 @@ class ProductsContainer(BaseModel):
     class Config:
         orm_mode = True
 
+
 class Order(BaseModel):
     id: int
     creation_date: datetime.datetime
@@ -130,4 +131,3 @@ class Order(BaseModel):
 
     class Config:
         orm_mode = True
-

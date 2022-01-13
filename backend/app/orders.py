@@ -14,7 +14,12 @@ from .db import models, get_db
 from . import schemas
 
 
-@app.get("/api/v1/order", response_model=List[schemas.Order], tags=["orders"], response_model_exclude={"previous"})
+@app.get(
+    "/api/v1/order",
+    response_model=List[schemas.Order],
+    tags=["orders"],
+    response_model_exclude={"previous"},
+)
 async def order(user: models.User = Depends(manager), db: Session = Depends(get_db)):
     if user.role == models.UserType.manager:
         return (
@@ -30,9 +35,7 @@ async def order(user: models.User = Depends(manager), db: Session = Depends(get_
             .filter(models.OrderWithAllInfo.customer_id == user.id)
             .all()
         )
-        return (
-            ret
-        )
+        return ret
 
 
 @app.get("/api/v1/order_stages", tags=["orders"])
@@ -102,7 +105,6 @@ async def create_order(
         assoc.order = new_order
         new_order.products.append(assoc)
 
-
     all_managers = (
         db.query(models.ManagerWithOrders)
         .filter(models.ManagerWithOrders.role == models.UserType.manager)
@@ -123,22 +125,59 @@ async def create_order(
 
 
 @app.get("/api/v1/order/{id}", response_model=schemas.Order, tags=["orders"])
-async def get_order_by_id(id: int, user: models.User = Depends(manager), db:Session = Depends(get_db)):
+async def get_order_by_id(
+    id: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
+):
     if user.role == models.UserType.manager:
-        order: Optional[models.OrderWithAllInfo] = db.query(models.OrderWithAllInfo).filter(models.OrderWithAllInfo.id == id).one_or_none()
+        order: Optional[models.OrderWithAllInfo] = (
+            db.query(models.OrderWithAllInfo)
+            .filter(models.OrderWithAllInfo.id == id)
+            .one_or_none()
+        )
         if order is None or order.manager_id != user.id:
             raise exceptions.InsufficientPrivileges
         return order
     if user.role == models.UserType.customer:
-        order: Optional[models.OrderWithAllInfo] = db.query(models.OrderWithAllInfo).filter(
-            models.OrderWithAllInfo.id == id).one_or_none()
+        order: Optional[models.OrderWithAllInfo] = (
+            db.query(models.OrderWithAllInfo)
+            .filter(models.OrderWithAllInfo.id == id)
+            .one_or_none()
+        )
         if order is None or order.customer_id != user.id:
             raise exceptions.InsufficientPrivileges
         return order
     if user.role == models.UserType.chef:
-        order: Optional[models.OrderWithAllInfo] = db.query(models.OrderWithAllInfo).filter(
-            models.OrderWithAllInfo.id == id).one_or_none()
+        order: Optional[models.OrderWithAllInfo] = (
+            db.query(models.OrderWithAllInfo)
+            .filter(models.OrderWithAllInfo.id == id)
+            .one_or_none()
+        )
         if order is None:
             raise exceptions.ArticleDoesNotExist
         return order
     raise exceptions.InsufficientPrivileges
+
+
+@app.get(
+    "/api/v1/get_products_by_order_id/{id}",
+    response_model=List[schemas.Product],
+    response_model_exclude={"previous"},
+    tags=["products"]
+)
+async def get_products_by_order_id(
+    id: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
+):
+    all_assocs = (
+        db.query(models.ProductOrderRelations)
+        .filter(models.ProductOrderRelations.order_id == id)
+        .all()
+    )
+    answer: List[models.ProductWithPreviousAccessoryCloth] = []
+    for assoc in all_assocs:
+        answer.append(
+            db.query(models.ProductWithPreviousAccessoryCloth)
+            .filter(models.ProductWithPreviousAccessoryCloth.id == assoc.product_id)
+            .one()
+        )
+
+    return answer
