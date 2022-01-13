@@ -102,18 +102,12 @@ async def article_does_not_exist(request: Request, ex: ArticleDoesNotExist):
 @app.exception_handler(OrderDoesNotExists)
 async def order_does_not_exist(request: Request, ex: OrderDoesNotExists):
     return JSONResponse(
-        status_code=404,
-        content={
-            "description": "Order does not exist"
-        }
+        status_code=404, content={"description": "Order does not exist"}
     )
 
 
 @app.exception_handler(InsufficientPrivileges)
 async def insufficient_privileges(request: Request, ex: InsufficientPrivileges):
     return JSONResponse(
-        status_code=401,
-        content={
-            "description": "Insufficient privileges"
-        }
+        status_code=401, content={"description": "Insufficient privileges"}
     )

@@ -51,12 +51,17 @@ ProductClothRelations = Table(
     Column("cloth_article", ForeignKey("clothes.article"), primary_key=True),
 )
 
-ProductOrderRelations = Table(
-    "product_order_relations",
-    Base.metadata,
-    Column("product_id", ForeignKey("products.id"), primary_key=True),
-    Column("order_id", ForeignKey("orders.id"), primary_key=True),
-)
+
+class ProductOrderRelations(Base):
+    __tablename__ = "product_order_relations"
+    product_id = Column(
+        ForeignKey("products.id"), primary_key=True, autoincrement=False
+    )
+    order_id = Column(ForeignKey("orders.id"), primary_key=True, autoincrement=False)
+    count = Column(Integer)
+
+    order = relationship("OrderWithAllInfo", back_populates="products")
+    product = relationship("ProductWithOrders", back_populates="orders")
 
 
 class Unit(Base):
@@ -84,7 +89,7 @@ class ClothStorage(Base):
     __tablename__ = "cloth_storage"
 
     number = Column(Integer, primary_key=True)
-    article = Column(Integer, ForeignKey("clothes.article"), primary_key=True)
+    article = Column(Integer, ForeignKey("clothes.article"))
     length = Column(Float)
 
 
@@ -103,6 +108,10 @@ class Product(Base):
     image = Column(String, nullable=True)
     comment = Column(Text, nullable=True)
     price = Column(Numeric(10, 2))
+
+
+class ProductWithOrders(Product):
+    orders = relationship(ProductOrderRelations, back_populates="product")
 
 
 class ProductWithPrevious(Product):
@@ -165,3 +174,11 @@ class Order(Base):
 class OrderWithUsers(Order):
     customer = relationship(User, foreign_keys=[Order.customer_id])
     manager = relationship(User, foreign_keys=[Order.manager_id])
+
+
+class OrderWithAllInfo(OrderWithUsers):
+    products = relationship(ProductOrderRelations, back_populates="order")
+
+
+class ManagerWithOrders(User):
+    orders = relationship(Order, foreign_keys=[Order.manager_id], viewonly=True)

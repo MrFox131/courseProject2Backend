@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import datetime
-from typing import Optional, List
+from typing import Optional, List, ForwardRef
 
 from pydantic import BaseModel
 
@@ -74,18 +74,6 @@ class UserModel(BaseModel):
         orm_mode = True
 
 
-class Order(BaseModel):
-    creation_date: datetime.datetime
-    completion_date: Optional[datetime.datetime]
-    stage: models.OrderStage
-    manager: UserModel
-    customer: UserModel
-    cost: float
-
-    class Config:
-        orm_mode = True
-
-
 class CreateNewAccessoryRequest(BaseModel):
     article: int
     name: str
@@ -122,3 +110,24 @@ class Product(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class ProductsContainer(BaseModel):
+    product: Product
+
+    class Config:
+        orm_mode = True
+
+class Order(BaseModel):
+    id: int
+    creation_date: datetime.datetime
+    completion_date: Optional[datetime.datetime]
+    stage: models.OrderStage
+    manager: UserModel
+    customer: UserModel
+    cost: float
+    products: Optional[List[ProductsContainer]]
+
+    class Config:
+        orm_mode = True
+

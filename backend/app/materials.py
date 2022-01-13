@@ -246,9 +246,7 @@ async def accessory_decommission(
 ):
     batch: Optional[models.AccessoriesStorage] = (
         db.query(models.AccessoriesStorage)
-        .filter(
-            models.AccessoriesStorage.article == article
-        )
+        .filter(models.AccessoriesStorage.article == article)
         .one_or_none()
     )
     if batch is None:
@@ -430,8 +428,16 @@ async def goods_arrival(
     font: Font = TrueTypeFont.true_type_font_from_file(font_path)
 
     layout: PageLayout = SingleColumnLayout(page)
-    layout.add(Paragraph("от «___» __________________ 2022г.", font=font, horizontal_alignment=Alignment.RIGHT))
-    layout.add(Paragraph("НАКЛАДНАЯ  № _____", font=font, text_alignment=Alignment.CENTERED))
+    layout.add(
+        Paragraph(
+            "от «___» __________________ 2022г.",
+            font=font,
+            horizontal_alignment=Alignment.RIGHT,
+        )
+    )
+    layout.add(
+        Paragraph("НАКЛАДНАЯ  № _____", font=font, text_alignment=Alignment.CENTERED)
+    )
     layout.add(Paragraph("От кого:_____________________________", font=font))
     layout.add(Paragraph("Кому:_______________________________", font=font))
     table = (
@@ -488,13 +494,13 @@ async def goods_arrival(
         clothes_json = json.loads(clothes)
         for cloth, packs in clothes_json.items():
             for length in packs:
-                cloth_as_is: models.Cloth = db.query(models.Cloth).filter(models.Cloth.article == cloth).one()
+                cloth_as_is: models.Cloth = (
+                    db.query(models.Cloth).filter(models.Cloth.article == cloth).one()
+                )
 
                 table.add(Paragraph(str(counter), font=font))
                 counter += 1
-                table.add(
-                    Paragraph(cloth_as_is.name + " " + str(cloth_as_is.article))
-                )
+                table.add(Paragraph(cloth_as_is.name + " " + str(cloth_as_is.article)))
                 table.add(Paragraph("метры", font=font))
                 table.add(Paragraph(str(length), font=font))
                 table.add(Paragraph(str(cloth_as_is.price), font=font))
@@ -509,12 +515,18 @@ async def goods_arrival(
                 if new_id_obj is not None:
                     print(new_id_obj)
                     new_id = new_id_obj + 1
-                cloth_m = models.ClothStorage(article=cloth, length=length, number=new_id)
+                cloth_m = models.ClothStorage(
+                    article=cloth, length=length, number=new_id
+                )
                 db.add(cloth_m)
                 db.flush()
                 db.refresh(cloth_m)
                 cloth_infos.append(
-                    {"number": cloth_m.number, "article": cloth_m.article, "length": length}
+                    {
+                        "number": cloth_m.number,
+                        "article": cloth_m.article,
+                        "length": length,
+                    }
                 )
 
     db.commit()
@@ -525,7 +537,7 @@ async def goods_arrival(
     layout.add(Paragraph("Сдал(Ф.И.О., подпись):_____________________", font=font))
     layout.add(Paragraph("Принял(Ф.И.О., подпись):______________________", font=font))
 
-    filename= "static/" + secrets.token_hex(nbytes=16) + ".pdf"
+    filename = "static/" + secrets.token_hex(nbytes=16) + ".pdf"
     with open(filename, "wb") as out_file_handle:
         PDF.dumps(out_file_handle, doc)
 
