@@ -161,6 +161,10 @@ class AccessoriesStorage(Base):
     count = Column(Integer)
 
 
+class AccessoriesStorageWithAccessory(AccessoriesStorage):
+    accessory = relationship(Accessory)
+
+
 class Order(Base):
     __tablename__ = "orders"
 

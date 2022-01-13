@@ -77,6 +77,23 @@ async def get_accessory_packs(
     return accessory
 
 
+@app.get(
+    "/api/v1/accessory_with_info/{article}",
+    response_model=Optional[schemas.AccessoryStorageWithAccessory],
+    tags=["storage"],
+)
+async def get_accessory_with_info_packs(
+        article: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
+):
+    accessory = (
+        db.query(models.AccessoriesStorageWithAccessory)
+            .filter(models.AccessoriesStorage.article == article)
+            .one_or_none()
+    )
+
+    return accessory
+
+
 @app.post(
     "/api/v1/accessory",
     summary="Добавить новый accessory",

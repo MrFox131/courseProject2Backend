@@ -65,6 +65,15 @@ class AccessoryStorage(BaseModel):
         orm_mode = True
 
 
+class AccessoryStorageWithAccessory(BaseModel):
+    article: int
+    count: int
+    accessory: Accessory
+
+    class Config:
+        orm_mode = True
+
+
 class UserModel(BaseModel):
     login: str
     name: str
