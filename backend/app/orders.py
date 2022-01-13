@@ -1,5 +1,5 @@
 import json
-from typing import List, Dict, Optional, Tuple, Any
+from typing import List, Dict, Optional, Tuple, Any, Union
 
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
@@ -160,7 +160,6 @@ async def get_order_by_id(
 
 @app.get(
     "/api/v1/get_products_by_order_id/{id}",
-    response_model=List[schemas.Product],
     response_model_exclude={"previous"},
     tags=["products"]
 )
@@ -172,7 +171,7 @@ async def get_products_by_order_id(
         .filter(models.ProductOrderRelations.order_id == id)
         .all()
     )
-    answer: List[Dict[str, Any[models.ProductWithOrders, int]]] = []
+    answer= []
     for assoc in all_assocs:
         answer.append(
             { "product": db.query(models.ProductWithOrders)
