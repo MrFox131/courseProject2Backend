@@ -1,5 +1,5 @@
 import json
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
@@ -72,7 +72,7 @@ async def change_order_status(
     return JSONResponse(status_code=200)
 
 
-@app.post("/api/v1/order")
+@app.post("/api/v1/order", tags=["orders"])
 async def create_order(
     products_json: str,
     user: models.User = Depends(manager),
@@ -120,3 +120,25 @@ async def create_order(
     db.commit()
 
     return JSONResponse(status_code=200)
+
+
+@app.get("/api/v1/order/{id}", response_model=schemas.Order, tags=["orders"])
+async def get_order_by_id(id: int, user: models.User = Depends(manager), db:Session = Depends(get_db)):
+    if user.role == models.UserType.manager:
+        order: Optional[models.OrderWithAllInfo] = db.query(models.OrderWithAllInfo).filter(models.OrderWithAllInfo.id == id).one_or_none()
+        if order is None or order.manager_id != user.id:
+            raise exceptions.InsufficientPrivileges
+        return order
+    if user.role == models.UserType.customer:
+        order: Optional[models.OrderWithAllInfo] = db.query(models.OrderWithAllInfo).filter(
+            models.OrderWithAllInfo.id == id).one_or_none()
+        if order is None or order.customer_id != user.id:
+            raise exceptions.InsufficientPrivileges
+        return order
+    if user.role == models.UserType.chef:
+        order: Optional[models.OrderWithAllInfo] = db.query(models.OrderWithAllInfo).filter(
+            models.OrderWithAllInfo.id == id).one_or_none()
+        if order is None:
+            raise exceptions.ArticleDoesNotExist
+        return order
+    raise exceptions.InsufficientPrivileges
