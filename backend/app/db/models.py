@@ -110,10 +110,6 @@ class Product(Base):
     price = Column(Numeric(10, 2))
 
 
-class ProductWithOrders(Product):
-    orders = relationship(ProductOrderRelations, back_populates="product")
-
-
 class ProductWithPrevious(Product):
     previous = relationship("ProductWithPrevious", uselist=False)
 
@@ -122,6 +118,12 @@ class ProductWithPreviousAccessoryCloth(Product):
     previous = relationship("ProductWithPreviousAccessoryCloth", uselist=False)
     accessories = relationship("Accessory", secondary=ProductAccessoryRelations)
     clothes = relationship("Cloth", secondary=ProductClothRelations)
+
+
+class ProductWithOrders(Product):
+    accessories = relationship("Accessory", secondary=ProductAccessoryRelations)
+    clothes = relationship("Cloth", secondary=ProductClothRelations)
+    orders = relationship(ProductOrderRelations, back_populates="product")
 
 
 class User(Base):

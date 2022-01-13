@@ -14,7 +14,7 @@ from .db import models, get_db
 from . import schemas
 
 
-@app.get("/api/v1/order", response_model=List[schemas.Order], tags=["orders"])
+@app.get("/api/v1/order", response_model=List[schemas.Order], tags=["orders"], response_model_exclude={"previous"})
 async def order(user: models.User = Depends(manager), db: Session = Depends(get_db)):
     if user.role == models.UserType.manager:
         return (
@@ -30,7 +30,6 @@ async def order(user: models.User = Depends(manager), db: Session = Depends(get_
             .filter(models.OrderWithAllInfo.customer_id == user.id)
             .all()
         )
-        print("hmmmm: ", ret[0].products)
         return (
             ret
         )
