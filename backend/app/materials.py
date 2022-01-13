@@ -237,10 +237,9 @@ async def cloth_decommission(
     )
 
 
-@app.patch("/api/v1/accessory/{article}/{number}", tags=["storage"])
+@app.patch("/api/v1/accessory/{article}", tags=["storage"])
 async def accessory_decommission(
     article: int,
-    number: int,
     quantity: int,
     user: models.User = Depends(manager),
     db: Session = Depends(get_db),
@@ -248,8 +247,7 @@ async def accessory_decommission(
     batch: Optional[models.AccessoriesStorage] = (
         db.query(models.AccessoriesStorage)
         .filter(
-            models.AccessoriesStorage.article == article,
-            models.AccessoriesStorage.number == number,
+            models.AccessoriesStorage.article == article
         )
         .one_or_none()
     )
