@@ -45,6 +45,14 @@ async def get_accessories(
     return db.query(models.Accessory).all()
 
 
+@app.get("/api/v1/accessory_by_id/{article}", response_model=schemas.Accessory, tags=["storage"])
+async def get_accessories(
+        article: int,
+        user: models.User = Depends(manager), db: Session = Depends(get_db)
+):
+    return db.query(models.Accessory).filter(models.Accessory.article == article).one()
+
+
 @app.get("/api/v1/cloth_by_id/{article}")
 async def cloth_by_article(
         article: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
