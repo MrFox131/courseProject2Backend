@@ -476,7 +476,7 @@ async def goods_arrival(
     table = (
         FixedColumnWidthTable(
             number_of_columns=6,
-            number_of_rows=10,
+            number_of_rows=20,
             column_widths=[
                 Decimal(1),
                 Decimal(4),
