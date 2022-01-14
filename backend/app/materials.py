@@ -533,7 +533,7 @@ async def goods_arrival(
 
                 table.add(Paragraph(str(counter), font=font))
                 counter += 1
-                table.add(Paragraph(cloth_as_is.name + " " + str(cloth_as_is.article)), font=font)
+                table.add(Paragraph(cloth_as_is.name + " " + str(cloth_as_is.article), font=font))
                 table.add(Paragraph("метры", font=font))
                 table.add(Paragraph(str(length), font=font))
                 table.add(Paragraph(str(cloth_as_is.price), font=font))
