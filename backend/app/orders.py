@@ -62,11 +62,11 @@ async def change_order_status(
         raise exceptions.OrderDoesNotExists
 
     if user.role == models.UserType.chef:
-        current_order.stage = status
+        current_order.stage = models.OrderStage(status)
     elif user.role == models.UserType.manager:
         if current_order.manager_id != user.id:
             raise exceptions.InsufficientPrivileges
-        current_order.stage = status
+        current_order.stage = models.OrderStage(status)
     else:
         raise exceptions.InsufficientPrivileges
 
