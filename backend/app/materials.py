@@ -544,7 +544,7 @@ async def goods_arrival(
                     .filter(models.ClothStorage.article == cloth)
                     .scalar()
                 )
-                new_id = 1
+                new_id = new_id_obj+1 if new_id_obj is not None else 1
                 if new_id_obj is not None:
                     print(new_id_obj)
                     new_id = new_id_obj + 1
