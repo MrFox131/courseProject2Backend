@@ -51,7 +51,7 @@ async def get_stages():
 @app.patch("/api/v1/order/{id}", tags=["orders"])
 async def change_order_status(
     id: int,
-    status: models.OrderStage,
+    status: int,
     user: models.User = Depends(manager),
     db: Session = Depends(get_db),
 ):
