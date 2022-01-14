@@ -541,7 +541,6 @@ async def goods_arrival(
 
                 new_id_obj = (
                     db.query(func.max(models.ClothStorage.number).label("max_id"))
-                    .filter(models.ClothStorage.article == cloth)
                     .scalar()
                 )
                 new_id = new_id_obj+1 if new_id_obj is not None else 1
