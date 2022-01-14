@@ -96,6 +96,7 @@ async def create_order(
             .filter(
                 models.ProductWithOrders.article == product,
                 models.ProductWithOrders.current_active == True,
+                models.ProductWithOrders.id != new_order.id
             )
             .one()
         )
