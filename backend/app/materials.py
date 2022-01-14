@@ -292,7 +292,8 @@ async def accessory_decommission(
 
 @app.post("/api/v1/product", description="Добавляем новую продукцию", tags=["products"])
 async def add_new_product(
-    previous_id: Optional[int] = Form(None),
+    # previous_id: Optional[int] = Form(None),
+    update: bool = Form(...),
     article: int = Form(...),
     name: str = Form(...),
     price: float = Form(...),
@@ -305,7 +306,7 @@ async def add_new_product(
     user: models.User = Depends(manager),
     db: Session = Depends(get_db),
 ):
-    if previous_id is None:
+    if not update:
         same_article = (
             db.query(models.Product)
             .filter(models.Product.article == article)
@@ -326,10 +327,10 @@ async def add_new_product(
     db.add(new_product)
     db.flush()
     db.refresh(new_product)
-    if previous_id is not None:
+    if update:
         prev: models.Product = (
             db.query(models.Product)
-            .filter(models.Product.id == previous_id, models.Product.article == article)
+            .filter(models.Product.current_active == True, models.Product.article == article)
             .one_or_none()
         )
         if prev is None:
