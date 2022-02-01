@@ -28,6 +28,7 @@ app.add_middleware(
 from . import auth
 from . import materials
 from . import orders
+from . import inventarization
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
