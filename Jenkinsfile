@@ -12,7 +12,7 @@ pipeline {
             }
             steps {
                 echo "Deploying and Building..."
-                sendTelegram("Building new containers 🛠\n Commit message: ${sh "echo git log -1 --pretty=%B"}")
+                sendTelegram("Building new containers 🛠\n Commit message: ${env.GIT_COMMIT}")
                 sh "docker-compose build"
                 echo "Recreating containers..."
                 sendTelegram("Upping new containers 🐳")
