@@ -12,16 +12,12 @@ pipeline {
             }
             steps {
                 echo "Deploying and Building..."
-                sendTelegram("Building new containers 🛠\nCommit message: ${env.GIT_COMMIT}")
-/*                 notifyEvents message: "#News_Backend 🛠 Building New Container...", token: '7yi9o1VBd3mz-JP2JhQOICo3Y5zgPHGk'*/
+                sendTelegram("Building new containers 🛠\n Commit message: ${env.CHANGE_TITLE}")
                 sh "docker-compose build"
-/*                 notifyEvents message: "#News_Backend ⛔️️ Stopping Previous Container...", token: '7yi9o1VBd3mz-JP2JhQOICo3Y5zgPHGk'*/
                 echo "Recreating containers..."
                 sendTelegram("Upping new containers 🐳")
-/*                 notifyEvents message: "#News_Backend 🐳 Upping New Container...", token: '7yi9o1VBd3mz-JP2JhQOICo3Y5zgPHGk' */
                 sh "docker-compose up -d"
                 echo "Deployed!"
-                sendTelegram("Done!")
             }
         }
     }
