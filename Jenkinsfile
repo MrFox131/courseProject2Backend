@@ -27,7 +27,7 @@ pipeline {
         }
     }
     method {
-        def sendTelegram(message) {
+        def sendTelegram(message) = {
             def encodedMessage = URLEncoder.encode(message, "UTF-8")
 
             withCredentials([string(credentialsId: 'telegramToken', variable: 'TOKEN'),
