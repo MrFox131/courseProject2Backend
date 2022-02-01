@@ -21,7 +21,7 @@ services:
     volumes:
       - static:/code/static
     ports:
-      - "80:80"
+      - "9000:9000"
 
 networks:
   delivery_system:
