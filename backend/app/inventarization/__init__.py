@@ -1,2 +1,2 @@
-import materials_registering
-import decommissions
+from . import materials_registering
+from . import decommissions
