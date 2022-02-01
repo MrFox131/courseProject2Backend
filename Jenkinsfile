@@ -12,13 +12,12 @@ pipeline {
             }
             steps {
                 echo "Deploying and Building..."
-                sendTelegram("Deploying and Building")
+                sendTelegram("Building new containers 🛠\nCommit message: ${env.GIT_COMMIT}")
 /*                 notifyEvents message: "#News_Backend 🛠 Building New Container...", token: '7yi9o1VBd3mz-JP2JhQOICo3Y5zgPHGk'*/
                 sh "docker-compose build"
-                sendTelegram("docker-compose build")
 /*                 notifyEvents message: "#News_Backend ⛔️️ Stopping Previous Container...", token: '7yi9o1VBd3mz-JP2JhQOICo3Y5zgPHGk'*/
                 echo "Recreating containers..."
-                sendTelegram("Uping")
+                sendTelegram("Upping new containers 🐳")
 /*                 notifyEvents message: "#News_Backend 🐳 Upping New Container...", token: '7yi9o1VBd3mz-JP2JhQOICo3Y5zgPHGk' */
                 sh "docker-compose up -d"
                 echo "Deployed!"
@@ -26,14 +25,14 @@ pipeline {
             }
         }
     }
-/*     post {
-//         success {
-//             notifyEvents message: "#News_Backend 🥃 Deploy Succeed 😍💕😋😎️", token: '7yi9o1VBd3mz-JP2JhQOICo3Y5zgPHGk'
-//         }
-//         failure {
-//             notifyEvents message: '#News_Backend Deploy Failed  😩😑😖😳', token: '7yi9o1VBd3mz-JP2JhQOICo3Y5zgPHGk'
-//         }
-//     }*/
+     post {
+         success {
+             sendTelegram("🥃 Deploy Succeed 😍💕😋😎️")
+         }
+         failure {
+             sendTelegram("Deploy Failed  😩😑😖😳")
+         }
+     }
 }
 
 void sendTelegram(message) {
