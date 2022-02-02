@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import Optional
 import math
 
@@ -58,7 +59,7 @@ async def accessory_decommission(
     if batch.amount < quantity:
         raise exceptions.InsufficientClothLength
 
-    batch.amount -= quantity
+    batch.amount -= Decimal(quantity)
     if batch.count <= 0.0:
         db.delete(batch)
     db.commit()
