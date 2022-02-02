@@ -368,7 +368,7 @@ async def goods_arrival(
                             if not accessory_as_is.kg_acceptable
                             else (
                                 float(accessory_as_is.price)
-                                * (count // accessory_as_is.weight)
+                                * round((count / accessory_as_is.weight))
                             )
                         )
                     ),
@@ -384,9 +384,9 @@ async def goods_arrival(
                 db.add(models.AccessoriesStorage(article=accessory, amount=count))
             else:
                 if not accessory_as_is.kg_acceptable:
-                    old_accessory.amount += Decimal(count//accessory_as_is.weight)
-                else:
                     old_accessory.amount += Decimal(count)
+                else:
+                    old_accessory.amount += Decimal(round((count / accessory_as_is.weight)))
 
             new_income = models.AccessoryChanges()
             if accessory_as_is.kg_acceptable:
