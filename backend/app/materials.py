@@ -61,7 +61,7 @@ async def add_new_product(
     if update:
         prev: models.Product = (
             db.query(models.Product)
-            .filter(models.Product.current_active == True, models.Product.article == article, models.Product.id != new_product.id)
+            .filter(models.Product.current_active == True, models.Product.article == article, models.Product.id != new_product.id, models.Product.size == size)
             .one_or_none()
         )
         if prev is None:
