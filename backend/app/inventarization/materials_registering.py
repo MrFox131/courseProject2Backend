@@ -328,7 +328,7 @@ async def goods_arrival(
             if old_accessory is None:
                 db.add(models.AccessoriesStorage(article=accessory, amount=count))
             else:
-                old_accessory.amount += count
+                old_accessory.amount += Decimal(count)
 
             new_income = models.AccessoryChanges()
             new_income.amount = count
