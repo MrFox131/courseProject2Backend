@@ -11,6 +11,7 @@ services:
       - "5432:5432"
     networks:
       - delivery_system
+      - scoobydoo
 
   backend:
     build: backend
@@ -18,6 +19,7 @@ services:
       - .env
     networks:
       - delivery_system
+      - scoobydoo
     volumes:
       - static:/code/static
     ports:
