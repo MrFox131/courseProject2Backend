@@ -220,3 +220,4 @@ class ClothChanges(Base):
     is_income = Column(Boolean, default=True)
     number = Column(Integer)
     length = Column(Numeric(10, 2))
+    timestamp = Column(DateTime, server_default=func.now())
