@@ -25,6 +25,9 @@ services:
 
 networks:
   delivery_system:
+  default:
+    external:
+      name: scoobydoo
 
 volumes:
   db_data:

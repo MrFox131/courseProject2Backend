@@ -9,6 +9,7 @@ from fastapi.responses import JSONResponse
 from .. import exceptions
 from ..db import get_db, models
 
+
 @app.patch("/api/v1/cloth/{article}/{number}", tags=["storage"])
 async def cloth_decommission(
         article: int,
