@@ -14,8 +14,9 @@ from borb.pdf.canvas.layout.text.paragraph import Paragraph
 from borb.pdf.document import Document
 from borb.pdf.page.page import Page
 from borb.pdf.pdf import PDF
-from fastapi import Depends, Form, UploadFile, File
+from fastapi import Depends, Form, UploadFile, File #
 from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -261,7 +262,7 @@ async def goods_arrival(
     page: Page = Page()
     doc.append_page(page)
     counter = 1
-    font_path: Path = Path(__file__).parent.parent / "tnr.ttf"
+    font_path: Path = Path(__file__).parent / "tnr.ttf"
     print(font_path)
     font: Font = TrueTypeFont.true_type_font_from_file(font_path)
 
@@ -308,6 +309,8 @@ async def goods_arrival(
                     .filter(models.Accessory.article == accessory)
                     .one()
             )
+            if not accessory_as_is.kg_acceptable and count is float:
+                raise RequestValidationError
             table.add(Paragraph(str(counter), font=font))
             counter += 1
             table.add(
@@ -316,14 +319,14 @@ async def goods_arrival(
             table.add(Paragraph("штуки" if not accessory_as_is.kg_acceptable else "кг", font=font))
             table.add(Paragraph(str(count), font=font))
             table.add(Paragraph(str(accessory_as_is.price), font=font))
-            table.add(Paragraph(str(accessory_as_is.price * count), font=font))
+            table.add(Paragraph(str(float(accessory_as_is.price) * count), font=font))
             old_accessory: Optional[models.AccessoriesStorage] = (
                 db.query(models.AccessoriesStorage)
                     .filter(models.AccessoriesStorage.article == accessory)
                     .one_or_none()
             )
             if old_accessory is None:
-                db.add(models.AccessoriesStorage(article=accessory, count=count))
+                db.add(models.AccessoriesStorage(article=accessory, amount=count))
             else:
                 old_accessory.amount += count
 
