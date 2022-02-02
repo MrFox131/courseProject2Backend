@@ -53,7 +53,7 @@ async def cloth_decommission(
 @app.patch("/api/v1/accessory/{article}", tags=["storage"])
 async def accessory_decommission(
     article: int,
-    quantity: float,
+    quantity: int,
     user: models.User = Depends(manager),
     db: Session = Depends(get_db),
 ):
@@ -68,8 +68,8 @@ async def accessory_decommission(
     if batch.amount < quantity:
         raise exceptions.InsufficientAccessoryCount
 
-    batch.amount -= Decimal(quantity)
-    if batch.amount <= 0.0:
+    batch.amount -= quantity
+    if batch.amount == 0:
         db.delete(batch)
 
     new_decommission = models.AccessoryChanges()
