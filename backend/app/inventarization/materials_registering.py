@@ -426,7 +426,7 @@ async def goods_arrival(
                 new_income.length = length
                 new_income.is_income = True
                 new_income.number = new_id
-                new_income.accessory_article = cloth
+                new_income.cloth_article = cloth
                 db.add(new_income)
 
                 db.add(cloth_m)
