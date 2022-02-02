@@ -1,12 +1,7 @@
 import json
-import math
-import secrets
-from pathlib import Path
-from typing import List, Optional, Dict
+from typing import List, Optional
 
-from borb.pdf.canvas.layout.layout_element import Alignment
 from sqlalchemy.orm import Session
-from sqlalchemy.sql import func
 
 from fastapi import Depends
 from fastapi.responses import JSONResponse
@@ -116,6 +111,7 @@ async def get_products(db: Session = Depends(get_db)):
     response_model=Optional[schemas.Product],
     response_model_exclude={"previous"},
     tags=["products"],
+    deprecated=True
 )
 async def get_product_by_article(article: int, db: Session = Depends(get_db)):
     return (
@@ -125,6 +121,24 @@ async def get_product_by_article(article: int, db: Session = Depends(get_db)):
             models.ProductWithPreviousAccessoryCloth.article == article,
         )
         .one_or_none()
+    )
+
+
+@app.get(
+    "/api/v1/product/{article}/{size}",
+    response_model=Optional[schemas.Product],
+    response_model_exclude={"previous"},
+    tags=["products"],
+)
+async def get_product_by_article_and_size(article: int, size: int, db: Session = Depends(get_db)):
+    return (
+        db.query(models.ProductWithPreviousAccessoryCloth)
+            .filter(
+            models.ProductWithPreviousAccessoryCloth.current_active == True,
+            models.ProductWithPreviousAccessoryCloth.article == article,
+            models.ProductWithPreviousAccessoryCloth.size == size
+        )
+            .one_or_none()
     )
 
 
