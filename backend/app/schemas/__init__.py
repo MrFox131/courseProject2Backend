@@ -114,6 +114,7 @@ class Product(BaseModel):
     image: Optional[str]
     comment: Optional[str]
     price: float
+    size: int
     clothes: Optional[List[Cloth]]
     accessories: Optional[List[Accessory]]
     previous: Optional["Product"]
