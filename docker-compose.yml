@@ -9,24 +9,17 @@ services:
       - db_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    networks:
-      - delivery_system
-      - scoobydoo
 
   backend:
     build: backend
     env_file:
       - .env
-    networks:
-      - delivery_system
-      - scoobydoo
     volumes:
       - static:/code/static
     ports:
       - "9000:9000"
 
 networks:
-  delivery_system:
   default:
     external:
       name: scoobydoo
