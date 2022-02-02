@@ -60,7 +60,7 @@ async def accessory_decommission(
         raise exceptions.InsufficientClothLength
 
     batch.amount -= Decimal(quantity)
-    if batch.count <= 0.0:
+    if batch.amount <= 0.0:
         db.delete(batch)
     db.commit()
     db.flush()
