@@ -325,7 +325,7 @@ async def goods_arrival(
             if old_accessory is None:
                 db.add(models.AccessoriesStorage(article=accessory, count=count))
             else:
-                old_accessory.count += count
+                old_accessory.amount += count
 
     cloth_infos = []
     if clothes is not None:
