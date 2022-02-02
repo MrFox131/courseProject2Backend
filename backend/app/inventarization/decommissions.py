@@ -34,6 +34,14 @@ async def cloth_decommission(
     batch.length -= length
     if math.fabs(batch.length) < 1e-10:
         db.delete(batch)
+
+    new_decommission = models.ClothChanges()
+    new_decommission.length = length
+    new_decommission.cloth_article = article,
+    new_decommission.number = number
+    new_decommission.is_income = False
+
+    db.add(new_decommission)
     db.commit()
     db.flush()
 
@@ -63,6 +71,13 @@ async def accessory_decommission(
     batch.amount -= Decimal(quantity)
     if batch.amount <= 0.0:
         db.delete(batch)
+
+    new_decommission = models.AccessoryChanges()
+    new_decommission.amount = quantity
+    new_decommission.accessory_article = article
+    new_decommission.is_income = False
+
+    db.add(new_decommission)
     db.commit()
     db.flush()
 
