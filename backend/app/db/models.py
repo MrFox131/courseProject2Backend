@@ -209,7 +209,7 @@ class AccessoryChanges(Base):
     accessory_article = Column(Integer, ForeignKey("accessories.article"))
     is_income = Column(Boolean, default=True)
     timestamp = Column(DateTime, server_default=func.now())
-    count = Column(Integer)
+    amount = Column(Numeric(10, 3))
 
 
 class ClothChanges(Base):

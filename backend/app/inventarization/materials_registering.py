@@ -2,7 +2,7 @@ import json
 import secrets
 from decimal import Decimal
 from pathlib import Path
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Union
 
 from borb.pdf.canvas.font.font import Font
 from borb.pdf.canvas.font.simple_font.true_type_font import TrueTypeFont
@@ -300,7 +300,7 @@ async def goods_arrival(
     )
 
     if accessories is not None:
-        accessories_json: Dict[int, int] = json.loads(accessories)
+        accessories_json: Dict[int, Union[int, float]] = json.loads(accessories)
 
         for accessory, count in accessories_json.items():
             accessory_as_is: models.Accessory = (
@@ -313,7 +313,7 @@ async def goods_arrival(
             table.add(
                 Paragraph(accessory_as_is.name + " " + str(accessory_as_is.article), font=font)
             )
-            table.add(Paragraph("штуки", font=font))
+            table.add(Paragraph("штуки" if not accessory_as_is.kg_acceptable else "кг", font=font))
             table.add(Paragraph(str(count), font=font))
             table.add(Paragraph(str(accessory_as_is.price), font=font))
             table.add(Paragraph(str(accessory_as_is.price * count), font=font))
