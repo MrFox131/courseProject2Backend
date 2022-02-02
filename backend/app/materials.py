@@ -32,7 +32,7 @@ async def add_new_product(
     image: UploadFile = File(...),
     cloth_articles: str = Form(...),
     accessory_articles: str = Form(...),
-    size: str = Form(...),
+    size: int = Form(...),
     user: models.User = Depends(manager),
     db: Session = Depends(get_db),
 ):
