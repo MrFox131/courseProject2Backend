@@ -40,6 +40,7 @@ class Accessory(BaseModel):
     weight: Optional[float] = None
     image: Optional[str] = None
     price: Optional[float] = None
+    kg_acceptable: bool
 
     class Config:
         orm_mode = True

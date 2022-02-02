@@ -1,3 +1,4 @@
+from pydantic import BaseModel
 from sqlalchemy import (
     Column,
     Integer,
@@ -108,6 +109,8 @@ class Product(Base):
     image = Column(String, nullable=True)
     comment = Column(Text, nullable=True)
     price = Column(Numeric(10, 2))
+    size = Column(Integer, primary_key=True, nullable=False)
+
 
 
 class ProductWithPrevious(Product):
@@ -152,6 +155,7 @@ class Accessory(Base):
     weight = Column(Float, nullable=True)
     image = Column(String, nullable=True)
     price = Column(Numeric(10, 2))
+    kg_acceptable = Column(Boolean, default=False)
 
 
 class AccessoriesStorage(Base):
@@ -188,3 +192,31 @@ class OrderWithAllInfo(OrderWithUsers):
 
 class ManagerWithOrders(User):
     orders = relationship(Order, foreign_keys=[Order.manager_id], viewonly=True)
+
+
+class ProductStorage(Base):
+    __tablename__ = "products_storage"
+
+    id = Column(Integer, primary_key=True)
+    product_id = Column(Integer, ForeignKey("products.id"))
+    count = Column(Integer)
+
+
+class AccessoryChanges(Base):
+    __tablename__ = "accessory_history"
+
+    id = Column(Integer, primary_key=True)
+    accessory_article = Column(Integer, ForeignKey("accessories.article"))
+    is_income = Column(Boolean, default=True)
+    timestamp = Column(DateTime, server_default=func.now())
+    count = Column(Integer)
+
+
+class ClothChanges(Base):
+    __tablename__ = "cloth_history"
+
+    id = Column(Integer, primary_key=True)
+    cloth_article = Column(Integer, ForeignKey("clothes.article"))
+    is_income = Column(Boolean, default=True)
+    number = Column(Integer)
+    length = Column(Numeric(10, 2))

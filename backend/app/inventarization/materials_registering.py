@@ -149,6 +149,7 @@ async def add_accessory(
         width: int = Form(...),
         length: Optional[int] = Form(...),
         weight: Optional[int] = Form(...),
+        kg_acceptable: bool = Form(True),
         price: float = Form(...),
         user: models.User = Depends(manager),
         image: UploadFile = File(...),
@@ -175,6 +176,7 @@ async def add_accessory(
         weight=weight,
         price=price,
         image=image_filename,
+        kg_acceptable = kg_acceptable
     )
     db.add(new_accessory)
     db.commit()
