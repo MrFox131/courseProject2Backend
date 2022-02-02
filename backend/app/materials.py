@@ -19,13 +19,6 @@ from . import schemas
 from . import utils
 
 
-
-
-
-
-
-
-
 @app.post("/api/v1/product", description="Добавляем новую продукцию", tags=["products"])
 async def add_new_product(
     # previous_id: Optional[int] = Form(None),
@@ -39,6 +32,7 @@ async def add_new_product(
     image: UploadFile = File(...),
     cloth_articles: str = Form(...),
     accessory_articles: str = Form(...),
+    size: str = Form(...),
     user: models.User = Depends(manager),
     db: Session = Depends(get_db),
 ):
@@ -60,6 +54,7 @@ async def add_new_product(
     new_product.image = image_filename
     new_product.comment = comment
     new_product.price = price
+    new_product.size = size
     db.add(new_product)
     db.flush()
     db.refresh(new_product)
