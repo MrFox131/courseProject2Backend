@@ -125,7 +125,7 @@ async def get_product_by_article(article: int, db: Session = Depends(get_db)):
 
 
 @app.get(
-    "/api/v1/product/{article}/{size}",
+    "/api/v1/product/v2/{article}/{size}",
     response_model=Optional[schemas.Product],
     response_model_exclude={"previous"},
     tags=["products"],
@@ -184,7 +184,7 @@ async def get_parents_by_article(article: int, db: Session = Depends(get_db)):
 
 
 @app.get(
-    "/api/v1/product/{article}/{size}/previous",
+    "/api/v1/product/v2/{article}/{size}/previous",
     response_model=List[schemas.Product],
     response_model_exclude={"previous"},
     tags=["products"],
