@@ -60,7 +60,7 @@ class PlainLoginRequest(BaseModel):
 
 class AccessoryStorage(BaseModel):
     article: int
-    count: int
+    amount: float
 
     class Config:
         orm_mode = True
@@ -68,7 +68,7 @@ class AccessoryStorage(BaseModel):
 
 class AccessoryStorageWithAccessory(BaseModel):
     article: int
-    count: int
+    amount: float
     accessory: Accessory
 
     class Config:

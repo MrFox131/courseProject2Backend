@@ -81,7 +81,7 @@ class Cloth(Base):
     print = Column(String, nullable=True)
     image = Column(String, nullable=True)
     composition = Column(Text)
-    width = Column(Float)
+    width = Column(Numeric(10, 2))
     price = Column(Numeric(10, 2))
     base_unit = Column(Integer, ForeignKey("units.id"))
 
@@ -162,7 +162,7 @@ class AccessoriesStorage(Base):
     __tablename__ = "accessories_storage"
 
     article = Column(Integer, ForeignKey("accessories.article"), primary_key=True)
-    count = Column(Integer)
+    amount = Column(Numeric(10, 3))
 
 
 class AccessoriesStorageWithAccessory(AccessoriesStorage):
