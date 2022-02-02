@@ -330,6 +330,12 @@ async def goods_arrival(
             else:
                 old_accessory.amount += count
 
+            new_income = models.AccessoryChanges()
+            new_income.amount = count
+            new_income.is_income = True
+            new_income.accessory_article = accessory
+            db.add(new_income)
+
     cloth_infos = []
     if clothes is not None:
         clothes_json = json.loads(clothes)
@@ -358,6 +364,14 @@ async def goods_arrival(
                 cloth_m = models.ClothStorage(
                     article=cloth, length=length, number=new_id
                 )
+
+                new_income = models.ClothChanges()
+                new_income.length = length
+                new_income.is_income = True
+                new_income.number = new_id
+                new_income.accessory_article = cloth
+                db.add(new_income)
+
                 db.add(cloth_m)
                 db.flush()
                 db.refresh(cloth_m)

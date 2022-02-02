@@ -66,7 +66,7 @@ async def accessory_decommission(
         raise exceptions.InvalidClothStorage
 
     if batch.amount < quantity:
-        raise exceptions.InsufficientClothLength
+        raise exceptions.InsufficientAccessoryCount
 
     batch.amount -= Decimal(quantity)
     if batch.amount <= 0.0:
