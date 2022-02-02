@@ -108,6 +108,7 @@ class Product(Base):
     length = Column(Integer)
     image = Column(String, nullable=True)
     comment = Column(Text, nullable=True)
+    changed_date = Column(DateTime, nullable=True)
     price = Column(Numeric(10, 2))
     size = Column(Integer, primary_key=True, nullable=False)
 

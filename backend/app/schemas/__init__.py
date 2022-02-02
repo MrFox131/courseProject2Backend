@@ -117,6 +117,7 @@ class Product(BaseModel):
     size: int
     clothes: Optional[List[Cloth]]
     accessories: Optional[List[Accessory]]
+    changed_date: Optional[datetime.datetime]
     previous: Optional["Product"]
 
     class Config:

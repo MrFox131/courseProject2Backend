@@ -1,6 +1,8 @@
+import datetime
 import json
 from typing import List, Optional
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from fastapi import Depends
@@ -64,6 +66,7 @@ async def add_new_product(
         prev.current_active = False
         print("prev.id = ", prev.id)
         prev.next_id = new_product.id
+        prev.changed_date = datetime.datetime.now()
     db.flush()
     db.refresh(new_product)
 
