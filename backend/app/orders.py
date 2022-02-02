@@ -161,7 +161,7 @@ async def get_order_by_id(
 @app.get(
     "/api/v1/get_products_by_order_id/{id}",
     response_model_exclude={"previous"},
-    tags=["products"]
+    tags=["products"],
 )
 async def get_products_by_order_id(
     id: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
@@ -171,12 +171,15 @@ async def get_products_by_order_id(
         .filter(models.ProductOrderRelations.order_id == id)
         .all()
     )
-    answer= []
+    answer = []
     for assoc in all_assocs:
         answer.append(
-            { "product": db.query(models.ProductWithOrders)
-            .filter(models.ProductWithOrders.id == assoc.product_id)
-            .one(), "count": assoc.count}
+            {
+                "product": db.query(models.ProductWithOrders)
+                .filter(models.ProductWithOrders.id == assoc.product_id)
+                .one(),
+                "count": assoc.count,
+            }
         )
 
     return answer
@@ -212,4 +215,3 @@ async def get_products_by_order_id(
     #         raise exceptions.ArticleDoesNotExist
     #     return order
     # raise exceptions.InsufficientPrivileges
-

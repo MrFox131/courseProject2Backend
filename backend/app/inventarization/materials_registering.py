@@ -14,7 +14,7 @@ from borb.pdf.canvas.layout.text.paragraph import Paragraph
 from borb.pdf.document import Document
 from borb.pdf.page.page import Page
 from borb.pdf.pdf import PDF
-from fastapi import Depends, Form, UploadFile, File #
+from fastapi import Depends, Form, UploadFile, File  #
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from sqlalchemy import func
@@ -29,37 +29,56 @@ from ..main import app, manager
 
 @app.get("/api/v1/cloth", response_model=List[schemas.Cloth], tags=["storage"])
 async def get_clothes(
-        user: models.User = Depends(manager), db: Session = Depends(get_db)
+    user: models.User = Depends(manager), db: Session = Depends(get_db)
 ):
-    if user.role not in [models.UserType.chef, models.UserType.manager, models.UserType.storage_manager]:
+    if user.role not in [
+        models.UserType.chef,
+        models.UserType.manager,
+        models.UserType.storage_manager,
+    ]:
         raise exceptions.InsufficientPrivileges
     return db.query(models.Cloth).all()
 
 
 @app.get("/api/v1/accessory", response_model=List[schemas.Accessory], tags=["storage"])
 async def get_accessories(
-        user: models.User = Depends(manager), db: Session = Depends(get_db)
+    user: models.User = Depends(manager), db: Session = Depends(get_db)
 ):
-    if user.role not in [models.UserType.chef, models.UserType.manager, models.UserType.storage_manager]:
+    if user.role not in [
+        models.UserType.chef,
+        models.UserType.manager,
+        models.UserType.storage_manager,
+    ]:
         raise exceptions.InsufficientPrivileges
     return db.query(models.Accessory).all()
 
 
-@app.get("/api/v1/accessory_by_id/{article}", response_model=schemas.Accessory, tags=["storage"])
+@app.get(
+    "/api/v1/accessory_by_id/{article}",
+    response_model=schemas.Accessory,
+    tags=["storage"],
+)
 async def get_accessories(
-        article: int,
-        user: models.User = Depends(manager), db: Session = Depends(get_db)
+    article: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
 ):
-    if user.role not in [models.UserType.chef, models.UserType.manager, models.UserType.storage_manager]:
+    if user.role not in [
+        models.UserType.chef,
+        models.UserType.manager,
+        models.UserType.storage_manager,
+    ]:
         raise exceptions.InsufficientPrivileges
     return db.query(models.Accessory).filter(models.Accessory.article == article).one()
 
 
 @app.get("/api/v1/cloth_by_id/{article}")
 async def cloth_by_article(
-        article: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
+    article: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
 ):
-    if user.role not in [models.UserType.chef, models.UserType.manager, models.UserType.storage_manager]:
+    if user.role not in [
+        models.UserType.chef,
+        models.UserType.manager,
+        models.UserType.storage_manager,
+    ]:
         raise exceptions.InsufficientPrivileges
     return db.query(models.Cloth).filter(models.Cloth.article == article).one()
 
@@ -70,14 +89,18 @@ async def cloth_by_article(
     tags=["storage"],
 )
 async def get_cloth_packs(
-        article: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
+    article: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
 ):
-    if user.role not in [models.UserType.chef, models.UserType.manager, models.UserType.storage_manager]:
+    if user.role not in [
+        models.UserType.chef,
+        models.UserType.manager,
+        models.UserType.storage_manager,
+    ]:
         raise exceptions.InsufficientPrivileges
     return (
         db.query(models.ClothStorage)
-            .filter(models.ClothStorage.article == article)
-            .all()
+        .filter(models.ClothStorage.article == article)
+        .all()
     )
 
 
@@ -87,14 +110,18 @@ async def get_cloth_packs(
     tags=["storage"],
 )
 async def get_accessory_packs(
-        article: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
+    article: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
 ):
-    if user.role not in [models.UserType.chef, models.UserType.manager, models.UserType.storage_manager]:
+    if user.role not in [
+        models.UserType.chef,
+        models.UserType.manager,
+        models.UserType.storage_manager,
+    ]:
         raise exceptions.InsufficientPrivileges
     accessory = (
         db.query(models.AccessoriesStorage)
-            .filter(models.AccessoriesStorage.article == article)
-            .one_or_none()
+        .filter(models.AccessoriesStorage.article == article)
+        .one_or_none()
     )
 
     return accessory
@@ -106,14 +133,18 @@ async def get_accessory_packs(
     tags=["storage"],
 )
 async def get_accessory_with_info_packs(
-        article: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
+    article: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
 ):
-    if user.role not in [models.UserType.chef, models.UserType.manager, models.UserType.storage_manager]:
+    if user.role not in [
+        models.UserType.chef,
+        models.UserType.manager,
+        models.UserType.storage_manager,
+    ]:
         raise exceptions.InsufficientPrivileges
     accessory = (
         db.query(models.AccessoriesStorageWithAccessory)
-            .filter(models.AccessoriesStorage.article == article)
-            .one_or_none()
+        .filter(models.AccessoriesStorage.article == article)
+        .one_or_none()
     )
 
     return accessory
@@ -144,24 +175,28 @@ async def get_accessory_with_info_packs(
     tags=["storage"],
 )
 async def add_accessory(
-        article: int = Form(...),
-        name: str = Form(...),
-        type: str = Form(...),
-        width: int = Form(...),
-        length: Optional[int] = Form(...),
-        weight: Optional[float] = Form(...),
-        kg_acceptable: bool = Form(False),
-        price: float = Form(...),
-        user: models.User = Depends(manager),
-        image: UploadFile = File(...),
-        db: Session = Depends(get_db),
+    article: int = Form(...),
+    name: str = Form(...),
+    type: str = Form(...),
+    width: int = Form(...),
+    length: Optional[int] = Form(...),
+    weight: Optional[float] = Form(...),
+    kg_acceptable: bool = Form(False),
+    price: float = Form(...),
+    user: models.User = Depends(manager),
+    image: UploadFile = File(...),
+    db: Session = Depends(get_db),
 ):
-    if user.role not in [models.UserType.chef, models.UserType.manager, models.UserType.former_employee]:
+    if user.role not in [
+        models.UserType.chef,
+        models.UserType.manager,
+        models.UserType.former_employee,
+    ]:
         raise exceptions.InsufficientPrivileges
     same_article = (
         db.query(models.Accessory)
-            .filter(models.Accessory.article == article)
-            .one_or_none()
+        .filter(models.Accessory.article == article)
+        .one_or_none()
     )
     if same_article is not None:
         raise exceptions.ArticleAlreadyExists
@@ -177,7 +212,7 @@ async def add_accessory(
         weight=weight,
         price=price,
         image=image_filename,
-        kg_acceptable = kg_acceptable
+        kg_acceptable=kg_acceptable,
     )
     db.add(new_accessory)
     db.commit()
@@ -213,16 +248,16 @@ async def add_accessory(
     tags=["storage"],
 )
 async def add_cloth(
-        article: int = Form(...),
-        color: str = Form(...),
-        print: Optional[str] = Form(...),
-        width: float = Form(...),
-        name: str = Form(...),
-        composition: str = Form(...),
-        price: float = Form(...),
-        image: UploadFile = File(...),
-        user: models.User = Depends(manager),
-        db: Session = Depends(get_db),
+    article: int = Form(...),
+    color: str = Form(...),
+    print: Optional[str] = Form(...),
+    width: float = Form(...),
+    name: str = Form(...),
+    composition: str = Form(...),
+    price: float = Form(...),
+    image: UploadFile = File(...),
+    user: models.User = Depends(manager),
+    db: Session = Depends(get_db),
 ):
     same_article = (
         db.query(models.Cloth).filter(models.Cloth.article == article).one_or_none()
@@ -253,10 +288,10 @@ async def add_cloth(
 
 @app.post("/api/v1/goods_arrival", tags=["storage"])
 async def goods_arrival(
-        accessories: Optional[str] = Form(None),
-        clothes: Optional[str] = Form(None),
-        user: models.User = Depends(manager),
-        db: Session = Depends(get_db),
+    accessories: Optional[str] = Form(None),
+    clothes: Optional[str] = Form(None),
+    user: models.User = Depends(manager),
+    db: Session = Depends(get_db),
 ):
     doc: Document = Document()
     page: Page = Page()
@@ -292,12 +327,12 @@ async def goods_arrival(
                 Decimal(2),
             ],
         )
-            .add(Paragraph("№\nп / п", font=font))
-            .add(Paragraph("Наименование", font=font))
-            .add(Paragraph("Единица\nизмерения", font=font))
-            .add(Paragraph("Количество", font=font))
-            .add(Paragraph("Цена (руб.)", font=font))
-            .add(Paragraph("Стоимость (руб.)", font=font))
+        .add(Paragraph("№\nп / п", font=font))
+        .add(Paragraph("Наименование", font=font))
+        .add(Paragraph("Единица\nизмерения", font=font))
+        .add(Paragraph("Количество", font=font))
+        .add(Paragraph("Цена (руб.)", font=font))
+        .add(Paragraph("Стоимость (руб.)", font=font))
     )
 
     if accessories is not None:
@@ -306,24 +341,43 @@ async def goods_arrival(
         for accessory, count in accessories_json.items():
             accessory_as_is: models.Accessory = (
                 db.query(models.Accessory)
-                    .filter(models.Accessory.article == accessory)
-                    .one()
+                .filter(models.Accessory.article == accessory)
+                .one()
             )
             if not accessory_as_is.kg_acceptable and count is float:
                 raise RequestValidationError
             table.add(Paragraph(str(counter), font=font))
             counter += 1
             table.add(
-                Paragraph(accessory_as_is.name + " " + str(accessory_as_is.article), font=font)
+                Paragraph(
+                    accessory_as_is.name + " " + str(accessory_as_is.article), font=font
+                )
             )
-            table.add(Paragraph("штуки" if not accessory_as_is.kg_acceptable else "кг", font=font))
+            table.add(
+                Paragraph(
+                    "штуки" if not accessory_as_is.kg_acceptable else "кг", font=font
+                )
+            )
             table.add(Paragraph(str(count), font=font))
             table.add(Paragraph(str(accessory_as_is.price), font=font))
-            table.add(Paragraph(str(float(accessory_as_is.price) * count), font=font))
+            table.add(
+                Paragraph(
+                    str(
+                        float(accessory_as_is.price)
+                        * count
+                        / (
+                            1
+                            if not accessory_as_is.kg_acceptable
+                            else accessory_as_is.weight
+                        )
+                    ),
+                    font=font,
+                )
+            )
             old_accessory: Optional[models.AccessoriesStorage] = (
                 db.query(models.AccessoriesStorage)
-                    .filter(models.AccessoriesStorage.article == accessory)
-                    .one_or_none()
+                .filter(models.AccessoriesStorage.article == accessory)
+                .one_or_none()
             )
             if old_accessory is None:
                 db.add(models.AccessoriesStorage(article=accessory, amount=count))
@@ -347,16 +401,19 @@ async def goods_arrival(
 
                 table.add(Paragraph(str(counter), font=font))
                 counter += 1
-                table.add(Paragraph(cloth_as_is.name + " " + str(cloth_as_is.article), font=font))
+                table.add(
+                    Paragraph(
+                        cloth_as_is.name + " " + str(cloth_as_is.article), font=font
+                    )
+                )
                 table.add(Paragraph("метры", font=font))
                 table.add(Paragraph(str(length), font=font))
                 table.add(Paragraph(str(cloth_as_is.price), font=font))
                 table.add(Paragraph(str(float(cloth_as_is.price) * length), font=font))
 
-                new_id_obj = (
-                    db.query(func.max(models.ClothStorage.number).label("max_id"))
-                        .scalar()
-                )
+                new_id_obj = db.query(
+                    func.max(models.ClothStorage.number).label("max_id")
+                ).scalar()
                 new_id = new_id_obj + 1 if new_id_obj is not None else 1
                 if new_id_obj is not None:
                     print(new_id_obj)

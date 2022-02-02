@@ -113,7 +113,6 @@ class Product(Base):
     size = Column(Integer, primary_key=True, nullable=False)
 
 
-
 class ProductWithPrevious(Product):
     previous = relationship("ProductWithPrevious", uselist=False)
 

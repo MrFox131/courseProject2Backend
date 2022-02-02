@@ -12,18 +12,18 @@ from ..db import get_db, models
 
 @app.patch("/api/v1/cloth/{article}/{number}", tags=["storage"])
 async def cloth_decommission(
-        article: int,
-        number: int,
-        length: float,
-        user: models.User = Depends(manager),
-        db: Session = Depends(get_db),
+    article: int,
+    number: int,
+    length: float,
+    user: models.User = Depends(manager),
+    db: Session = Depends(get_db),
 ):
     batch: Optional[models.ClothStorage] = (
         db.query(models.ClothStorage)
-            .filter(
+        .filter(
             models.ClothStorage.article == article, models.ClothStorage.number == number
         )
-            .one_or_none()
+        .one_or_none()
     )
     if batch is None:
         raise exceptions.InvalidClothStorage
@@ -37,7 +37,7 @@ async def cloth_decommission(
 
     new_decommission = models.ClothChanges()
     new_decommission.length = length
-    new_decommission.cloth_article = article,
+    new_decommission.cloth_article = (article,)
     new_decommission.number = number
     new_decommission.is_income = False
 
@@ -52,15 +52,15 @@ async def cloth_decommission(
 
 @app.patch("/api/v1/accessory/{article}", tags=["storage"])
 async def accessory_decommission(
-        article: int,
-        quantity: float,
-        user: models.User = Depends(manager),
-        db: Session = Depends(get_db),
+    article: int,
+    quantity: float,
+    user: models.User = Depends(manager),
+    db: Session = Depends(get_db),
 ):
     batch: Optional[models.AccessoriesStorage] = (
         db.query(models.AccessoriesStorage)
-            .filter(models.AccessoriesStorage.article == article)
-            .one_or_none()
+        .filter(models.AccessoriesStorage.article == article)
+        .one_or_none()
     )
     if batch is None:
         raise exceptions.InvalidClothStorage

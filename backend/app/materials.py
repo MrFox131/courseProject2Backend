@@ -58,7 +58,12 @@ async def add_new_product(
     if update:
         prev: models.Product = (
             db.query(models.Product)
-            .filter(models.Product.current_active == True, models.Product.article == article, models.Product.id != new_product.id, models.Product.size == size)
+            .filter(
+                models.Product.current_active == True,
+                models.Product.article == article,
+                models.Product.id != new_product.id,
+                models.Product.size == size,
+            )
             .one_or_none()
         )
         if prev is None:
@@ -114,7 +119,7 @@ async def get_products(db: Session = Depends(get_db)):
     response_model=Optional[schemas.Product],
     response_model_exclude={"previous"},
     tags=["products"],
-    deprecated=True
+    deprecated=True,
 )
 async def get_product_by_article(article: int, db: Session = Depends(get_db)):
     return (
@@ -133,15 +138,17 @@ async def get_product_by_article(article: int, db: Session = Depends(get_db)):
     response_model_exclude={"previous"},
     tags=["products"],
 )
-async def get_product_by_article_and_size(article: int, size: int, db: Session = Depends(get_db)):
+async def get_product_by_article_and_size(
+    article: int, size: int, db: Session = Depends(get_db)
+):
     return (
         db.query(models.ProductWithPreviousAccessoryCloth)
-            .filter(
+        .filter(
             models.ProductWithPreviousAccessoryCloth.current_active == True,
             models.ProductWithPreviousAccessoryCloth.article == article,
-            models.ProductWithPreviousAccessoryCloth.size == size
+            models.ProductWithPreviousAccessoryCloth.size == size,
         )
-            .one_or_none()
+        .one_or_none()
     )
 
 
@@ -150,7 +157,7 @@ async def get_product_by_article_and_size(article: int, size: int, db: Session =
     response_model=List[schemas.Product],
     response_model_exclude={"previous"},
     tags=["products"],
-    deprecated=True
+    deprecated=True,
 )
 async def get_parents_by_article(article: int, db: Session = Depends(get_db)):
     answer: List[models.ProductWithPreviousAccessoryCloth] = [
@@ -192,15 +199,17 @@ async def get_parents_by_article(article: int, db: Session = Depends(get_db)):
     response_model_exclude={"previous"},
     tags=["products"],
 )
-async def get_parents_by_article(article: int, size: int, db: Session = Depends(get_db)):
+async def get_parents_by_article(
+    article: int, size: int, db: Session = Depends(get_db)
+):
     answer: List[models.ProductWithPreviousAccessoryCloth] = [
         db.query(models.ProductWithPreviousAccessoryCloth)
-            .filter(
+        .filter(
             models.ProductWithPreviousAccessoryCloth.article == article,
             models.ProductWithPreviousAccessoryCloth.current_active == True,
-            models.ProductWithPreviousAccessoryCloth.size == size
+            models.ProductWithPreviousAccessoryCloth.size == size,
         )
-            .one_or_none()
+        .one_or_none()
     ]
     if answer[0] is None:
         raise exceptions.ArticleDoesNotExist
@@ -210,13 +219,13 @@ async def get_parents_by_article(article: int, size: int, db: Session = Depends(
     while exists:
         new_parent = (
             db.query(models.ProductWithPreviousAccessoryCloth)
-                .filter(
+            .filter(
                 models.ProductWithPreviousAccessoryCloth.article == article,
                 models.ProductWithPreviousAccessoryCloth.next_id
                 == answer[len(answer) - 1].id,
-                models.ProductWithPreviousAccessoryCloth.size == size
+                models.ProductWithPreviousAccessoryCloth.size == size,
             )
-                .one_or_none()
+            .one_or_none()
         )
         if new_parent is None:
             exists = False
@@ -226,6 +235,3 @@ async def get_parents_by_article(article: int, size: int, db: Session = Depends(
     answer = answer[1:]
 
     return answer
-
-
-
