@@ -37,9 +37,11 @@ async def cloth_decommission(
     if math.fabs(batch.length) < 1e-10:
         db.delete(batch)
 
+    cloth: models.Cloth = db.query(models.Cloth).filter(models.Cloth.article == article)
+
     new_decommission = models.ClothChanges()
-    new_decommission.length = length
-    new_decommission.cloth_article = (article,)
+    new_decommission.area = cloth.width * length
+    new_decommission.cloth_article = article
     new_decommission.number = number
     new_decommission.is_income = False
 

@@ -219,7 +219,7 @@ class ClothChanges(Base):
     cloth_article = Column(Integer, ForeignKey("clothes.article"))
     is_income = Column(Boolean, default=True)
     number = Column(Integer)
-    length = Column(Numeric(10, 2))
+    area = Column(Numeric(10, 2))
     timestamp = Column(DateTime, server_default=func.now())
 
 
