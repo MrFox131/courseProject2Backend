@@ -21,6 +21,7 @@ def get_all_items_status(user: models.User = Depends(manager), db: Session = Dep
             area = float(cloth_storage.length*cloth.width)
             answer.append({
                 "type": "cloth_batch",
+                "batch_number": cloth_storage.number,
                 "amount": area,
                 "cloth": cloth
             })
@@ -30,6 +31,7 @@ def get_all_items_status(user: models.User = Depends(manager), db: Session = Dep
             area = float(patch.width*patch.length)
             answer.append({
                 "type": "cloth_patch",
+                "patch_id": patch.id,
                 "amount": area,
                 "cloth": cloth
             })

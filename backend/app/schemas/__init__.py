@@ -159,6 +159,8 @@ class StorageStatus(BaseModel):
     type: str
     amount: Union[float, int]
     cloth: Optional[Cloth]
+    batch_number: Optional[int]
+    patch_id: Optional[int]
     accessory: Optional[Accessory]
 
     class Config:
