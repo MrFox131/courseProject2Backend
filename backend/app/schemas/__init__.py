@@ -172,3 +172,13 @@ class PiecesDescription(BaseModel):
     width: float
     length: float
     count: int = 1
+
+    @classmethod
+    def from_json(cls, json) -> List[PiecesDescription] :
+        answer = []
+        if json[0]!= '[':
+            json = '[' + json + ']'
+        json = json.loads(json)
+        for item in json:
+            answer.append(PiecesDescription(**item))
+

@@ -27,7 +27,7 @@ async def add_new_product(
     length: int = Form(...),
     comment: str = Form(...),
     image: UploadFile = File(...),
-    cloth_pieces: List[schemas.PiecesDescription] = Form(...),
+    cloth_pieces: List[schemas.PiecesDescription] = Depends(schemas.PiecesDescription.from_json),
     accessory_articles: List[int] = Form(...),
     size: int = Form(...),
     user: models.User = Depends(manager),
