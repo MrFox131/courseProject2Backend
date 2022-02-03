@@ -106,7 +106,7 @@ async def get_cloth_packs(
 
 @app.get(
     "/api/v1/accessory/{article}",
-    response_model=Optional[schemas.AccessoryStorage],
+    response_model=schemas.AccessoryStorage,
     tags=["storage"],
 )
 async def get_accessory_packs(
@@ -123,6 +123,9 @@ async def get_accessory_packs(
         .filter(models.AccessoriesStorage.article == article)
         .one_or_none()
     )
+
+    if accessory is None:
+        accessory = schemas.AccessoryStorage(article=article)
 
     return accessory
 
