@@ -289,7 +289,7 @@ async def add_cloth(
 @app.post("/api/v1/goods_arrival", tags=["storage"])
 async def goods_arrival(
     accessories: Optional[Dict[int, Union[int, float]]] = Form(None),
-    clothes: Optional[str] = Form(None),
+    clothes: Optional[Dict[int, List[float]]] = Form(None),
     user: models.User = Depends(manager),
     db: Session = Depends(get_db),
 ):
@@ -400,8 +400,7 @@ async def goods_arrival(
 
     cloth_infos = []
     if clothes is not None:
-        clothes_json = json.loads(clothes)
-        for cloth, packs in clothes_json.items():
+        for cloth, packs in clothes.items():
             for length in packs:
                 cloth_as_is: models.Cloth = (
                     db.query(models.Cloth).filter(models.Cloth.article == cloth).one()
