@@ -101,7 +101,7 @@ def accessory_in_kg_decommission(article: int, amount: float, user: models.User 
             .one_or_none()
     )
 
-    accessory: models.Accessory = db.query(models.Accessory).filter(models.Accessory == article).one_or_none()
+    accessory: models.Accessory = db.query(models.Accessory).filter(models.Accessory.article == article).one_or_none()
 
     if accessory is None:
         raise exceptions.ArticleDoesNotExist
