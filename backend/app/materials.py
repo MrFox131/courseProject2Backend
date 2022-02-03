@@ -93,7 +93,7 @@ async def add_new_product(
     accessory_articles = json.loads(accessory_articles if accessory_articles != '' else '[]')
 
     for accessory in accessory_articles:
-        new_product.accessories += db.query(models.Accessory).filter(models.Accessory.article == accessory)
+        new_product.accessories.append(db.query(models.Accessory).filter(models.Accessory.article == accessory))
 
     for cloth_object in cloth_pieces:
         cloth: models.Cloth = db.query(models.Cloth).filter(models.Cloth.article == cloth_object.article).one()
