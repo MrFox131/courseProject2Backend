@@ -28,7 +28,7 @@ async def add_new_product(
     comment: str = Form(...),
     image: UploadFile = File(...),
     cloth_pieces: List[schemas.PiecesDescription] = Form(...),
-    accessory_articles: str = Form(...),
+    accessory_articles: List[int] = Form(...),
     size: int = Form(...),
     user: models.User = Depends(manager),
     db: Session = Depends(get_db),
@@ -74,8 +74,6 @@ async def add_new_product(
         prev.changed_date = datetime.datetime.now()
     db.flush()
     db.refresh(new_product)
-
-    accessory_articles = json.loads(accessory_articles)
 
     # for cloth in cloth_articles:
     #
