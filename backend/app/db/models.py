@@ -221,3 +221,12 @@ class ClothChanges(Base):
     number = Column(Integer)
     length = Column(Numeric(10, 2))
     timestamp = Column(DateTime, server_default=func.now())
+
+
+class Patch(Base):
+    __tablename__ = 'patches'
+
+    id = Column(Integer, primary_key=True)
+    article = Column(Integer, ForeignKey('clothes.article'))
+    width = Column(Numeric(10, 2))
+    length = Column(Numeric(10, 2))

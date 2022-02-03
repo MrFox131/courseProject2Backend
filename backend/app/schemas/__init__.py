@@ -143,3 +143,13 @@ class Order(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class Patch(BaseModel):
+    id: Optional[int]
+    article: int
+    width: float
+    length: float
+
+    class Config:
+        orm_mode = True
