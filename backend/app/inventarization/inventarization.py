@@ -8,7 +8,7 @@ from .. import schemas
 from .. import exceptions
 
 
-@app.get("/api/v1/get_all_items_status", response_model=schemas.StorageStatus)
+@app.get("/api/v1/get_all_items_status", response_model=List[schemas.StorageStatus])
 def get_all_items_status(user: models.User = Depends(manager), db: Session = Depends(get_db)):
     if user.role not in [models.UserType.chef, models.UserType.storage_manager]:
         raise exceptions.InsufficientPrivileges
