@@ -157,6 +157,9 @@ class Patch(BaseModel):
 
 class StorageStatus(BaseModel):
     type: str
-    article: int
-    name: str
     amount: Union[float, int]
+    cloth: Optional[Cloth]
+    accessory: Optional[Accessory]
+
+    class Config:
+        orm_mode = True

@@ -27,18 +27,16 @@ def get_all_items_status(user: models.User = Depends(manager), db: Session = Dep
 
         answer.append({
             "type": "cloth",
-            "article": cloth_article,
-            "name": cloth.name,
-            "amount": area
+            "amount": area,
+            "cloth": cloth
         })
 
     for accessory in db.query(models.AccessoriesStorage).all():
         accessory_row: models.Accessory = db.query(models.Accessory).filter(models.Accessory.article == accessory.article).one()
         answer.append({
             "type": "accessory",
-            "article": accessory_row.article,
-            "name": accessory_row.name,
-            "amount": accessory.amount
+            "amount": accessory.amount,
+            "accessory": accessory_row
         })
 
     return answer
