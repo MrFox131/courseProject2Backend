@@ -91,7 +91,7 @@ async def accessory_decommission(
 
 
 @app.patch("/api/v1/accessory_in_kg/{article}", tags=["storage"])
-def accessory_in_kg_decommission(article: int, amount: float, user: models.User = Depends(manager), db: Session = Depends(get_db)):
+def accessory_in_kg_decommission(article: int, quantity: float, user: models.User = Depends(manager), db: Session = Depends(get_db)):
     if user.role not in [models.UserType.chef, models.UserType.storage_manager]:
         raise exceptions.InsufficientPrivileges
 
