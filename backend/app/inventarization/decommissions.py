@@ -18,7 +18,7 @@ async def cloth_decommission(
     user: models.User = Depends(manager),
     db: Session = Depends(get_db),
 ):
-    if user.type not in [models.UserType.chef, models.UserType.storage_manager]:
+    if user.role not in [models.UserType.chef, models.UserType.storage_manager]:
         raise exceptions.InsufficientPrivileges
     batch: Optional[models.ClothStorage] = (
         db.query(models.ClothStorage)
@@ -59,7 +59,7 @@ async def accessory_decommission(
     user: models.User = Depends(manager),
     db: Session = Depends(get_db),
 ):
-    if user.type not in [models.UserType.chef, models.UserType.storage_manager]:
+    if user.role not in [models.UserType.chef, models.UserType.storage_manager]:
         raise exceptions.InsufficientPrivileges
     batch: Optional[models.AccessoriesStorage] = (
         db.query(models.AccessoriesStorage)
@@ -92,7 +92,7 @@ async def accessory_decommission(
 
 @app.patch("/api/v1/accessory_in_kg/{article}", tags=["storage"])
 def accessory_in_kg_decommission(article: int, amount: float, user: models.User = Depends(manager), db: Session = Depends(get_db)):
-    if user.type not in [models.UserType.chef, models.UserType.storage_manager]:
+    if user.role not in [models.UserType.chef, models.UserType.storage_manager]:
         raise exceptions.InsufficientPrivileges
 
     batch: Optional[models.AccessoriesStorage] = (

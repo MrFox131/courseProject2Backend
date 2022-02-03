@@ -113,6 +113,7 @@ async def register(data: schemas.RegisterRequest, db: Session = Depends(get_db))
 )
 async def login(data: OAuth2PasswordRequestForm = Depends()):
     user: models.User = await get_user(data.username)
+
     if user is None:
         raise exceptions.InvalidNicknameOrPassword
     if not verify_password(data.password, user.salt, user.password):
