@@ -24,3 +24,7 @@ async def create_patch(patch: schemas.Patch, user: models.User = Depends(manager
     db.commit()
 
     return new_patch
+
+
+def get_all_patches_of_article(article: int, db: Session):
+    return db.query(models.Patch).filter(models.Patch.article == article).all()
