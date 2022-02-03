@@ -1,6 +1,8 @@
+import datetime
 from typing import List, Union
 
 from fastapi.responses import JSONResponse
+from functools import reduce
 
 from ..main import app, manager
 from sqlalchemy.orm import Session
@@ -99,3 +101,41 @@ def new_state(new_values: List[schemas.StorageStatus], user: models.User = Depen
     return JSONResponse(status_code=200, content={
         "detail": "Successfully"
     })
+
+
+@app.get("/api/v1/get_changes")
+def get_changes(start: datetime.datetime, end: datetime.datetime, user:models.User = Depends(manager), db: Session = Depends(get_bd)):
+    if user.role != models.UserType.manager:
+        raise exceptions.InsufficientPrivileges
+
+    cloth_changes: List[models.ClothChanges] = db.query(models.ClothChanges).filter(models.ClothChanges.timestamp >= start, models.ClothChanges.timestamp <= end).all()
+    accessory_changes: List[models.AccessoryChanges] = db.query(models.AccessoryChanges).filter(models.AccessoryChanges.timestamp >= start, models.ClothChanges <= end).all()
+
+    cloth_changes_result = {
+        "income": 0,
+        "outcome": 0,
+    }
+    for i in cloth_changes:
+        if i.is_income:
+            cloth_changes_result['income'] += i.area
+        else:
+            cloth_changes_result['outcome'] += i.area
+
+    cloth_changes_result["result"] = cloth_changes_result['income']-cloth_changes_result['outcome']
+
+    accessory_changes_result = {
+        "income": 0,
+        "outcome": 0,
+    }
+    for i in accessory_changes:
+        if i.is_income:
+            cloth_changes_result['income'] += i.amount
+        else:
+            cloth_changes_result['outcome'] += i.amount
+
+    cloth_changes_result["result"] = cloth_changes_result['income'] - cloth_changes_result['outcome']
+
+    return {
+        "cloth": cloth_changes_result,
+        "accessory": accessory_changes_result
+    }
