@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import datetime
-from typing import Optional, List, ForwardRef
+from typing import Optional, List, ForwardRef, Union
 
 from pydantic import BaseModel
 
@@ -153,3 +153,10 @@ class Patch(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class StorageStatus(BaseModel):
+    type: str
+    article: int
+    name: str
+    amount: Union[float, int]
