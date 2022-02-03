@@ -28,7 +28,7 @@ async def add_new_product(
     comment: str = Form(...),
     image: UploadFile = File(...),
     cloth_pieces: List[schemas.PiecesDescription] = Depends(schemas.PiecesDescription.from_json),
-    accessory_articles: List[int] = Form(...),
+    accessory_articles: str = Form(...),
     size: int = Form(...),
     user: models.User = Depends(manager),
     db: Session = Depends(get_db),
@@ -89,6 +89,8 @@ async def add_new_product(
     #             product_id=new_product.id, accessory_article=accessory
     #         )
     #     )
+
+    accessory_articles = json.loads(accessory_articles)
 
     for accessory in accessory_articles:
         new_product.accessories += db.query(models.Accessory).filter(models.Accessory.article == accessory)
