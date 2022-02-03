@@ -164,6 +164,7 @@ class StorageStatus(BaseModel):
     batch_number: Optional[int]
     patch_id: Optional[int]
     accessory: Optional[Accessory]
+    delete_batch: Optional[bool]
 
     class Config:
         orm_mode = True

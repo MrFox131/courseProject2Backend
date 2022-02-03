@@ -1,4 +1,6 @@
-from typing import List
+from typing import List, Union
+
+from fastapi.responses import JSONResponse
 
 from ..main import app, manager
 from sqlalchemy.orm import Session
@@ -68,5 +70,32 @@ def get_all_items_status(
 
 
 @app.post("/api/v1/new_state_after_inventarixation")  # TODO
-def new_state(user: models.User = Depends(manager), db: Session = Depends(get_db)):
-    pass
+def new_state(new_values: List[schemas.StorageStatus], user: models.User = Depends(manager), db: Session = Depends(get_db)):
+    for value in new_values:
+        if value.type == 'accessory':
+            if value.accessory.kg_acceptable:
+                accessory = db.query(models.AccessoriesStorage).filter(models.AccessoriesStorage.article == value.accessory.article).one()
+                accessory.amount = round(value.amount / value.accessory.weight)
+                if accessory.amount == 0:
+                    db.delete(accessory)
+            else:
+                accessory = db.query(models.AccessoriesStorage).filter(
+                    models.AccessoriesStorage.article == value.accessory.article).one()
+                accessory.amount = int(value.amount)
+                if accessory.amount == 0:
+                    db.delete(accessory)
+        elif value.type == 'cloth_batch':
+            cloth_batch: models.ClothStorage = db.query(models.ClothStorage).filter(models.ClothStorage.article == value.cloth.article , models.ClothStorage.number == value.batch_number).one()
+            cloth_batch.length = value.amount / value.cloth.width
+            if cloth_batch.length <= 0.001:
+                db.delete(cloth_batch)
+        else:
+            if value.delete_batch:
+                batch = db.query(models.ClothPiece).filter(models.ClothPiece.id == value.patch_id).one()
+                db.delete(batch)
+
+    db.commit()
+
+    return JSONResponse(status_code=200, content={
+        "detail": "Successfully"
+    })
