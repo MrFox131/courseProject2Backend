@@ -66,7 +66,7 @@ def get_all_items_status(
 
     return answer
 
-#
-# @app.post("/api/v1/new_state_after_inventarixation")  # TODO
-# def new_state(user: models.User = Depends(manager), db: Session = Depends(get_db)):
-#     pass
+
+@app.post("/api/v1/new_state_after_inventarixation")  # TODO
+def new_state(user: models.User = Depends(manager), db: Session = Depends(get_db)):
+    pass

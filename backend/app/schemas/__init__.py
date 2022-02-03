@@ -165,3 +165,10 @@ class StorageStatus(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class PiecesDescription(BaseModel):
+    article: int
+    width: float
+    length: float
+    count: int = 1

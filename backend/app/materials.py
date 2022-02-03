@@ -27,7 +27,7 @@ async def add_new_product(
     length: int = Form(...),
     comment: str = Form(...),
     image: UploadFile = File(...),
-    cloth_articles: str = Form(...),
+    cloth_pieces: List[schemas.PiecesDescription] = Form(...),
     accessory_articles: str = Form(...),
     size: int = Form(...),
     user: models.User = Depends(manager),
@@ -42,7 +42,7 @@ async def add_new_product(
         if same_article is not None:
             raise exceptions.ArticleAlreadyExists
 
-    new_product: models.Product = models.Product()
+    new_product: models.ProductWithPreviousAccessoryCloth = models.ProductWithPreviousAccessoryCloth()
     new_product.article = article
     new_product.name = name
     new_product.length = length
@@ -75,22 +75,38 @@ async def add_new_product(
     db.flush()
     db.refresh(new_product)
 
-    cloth_articles = json.loads(cloth_articles)
     accessory_articles = json.loads(accessory_articles)
 
-    for cloth in cloth_articles:
-        db.execute(
-            models.ProductClothRelations.insert().values(
-                product_id=new_product.id, cloth_article=cloth
-            )
-        )
+    # for cloth in cloth_articles:
+    #
+    #     db.execute(
+    #         models.ProductClothRelations.insert().values(
+    #             product_id=new_product.id, cloth_article=cloth
+    #         )
+    #     )
+    #
+    # for accessory in accessory_articles:
+    #     db.execute(
+    #         models.ProductAccessoryRelations.insert().values(
+    #             product_id=new_product.id, accessory_article=accessory
+    #         )
+    #     )
 
     for accessory in accessory_articles:
-        db.execute(
-            models.ProductAccessoryRelations.insert().values(
-                product_id=new_product.id, accessory_article=accessory
-            )
-        )
+        new_product.accessories += db.query(models.Accessory).filter(models.Accessory.article == accessory)
+
+    for cloth_object in cloth_pieces:
+        cloth: models.Cloth = db.query(models.Cloth).filter(models.Cloth.article == cloth_object.article).one()
+        if cloth not in new_product.clothes:
+            new_product.clothes += cloth
+        new_piece: models.ClothPiece = models.ClothPiece()
+        new_piece.width = cloth_object.width
+        new_piece.length = cloth_object.length
+        new_piece.cloth_article = cloth.article
+        new_piece.product_id = new_product.id
+        new_piece.count = cloth_object.count
+
+        db.add(new_piece)
 
     db.commit()
     db.flush()
@@ -235,3 +251,5 @@ async def get_parents_by_article(
     answer = answer[1:]
 
     return answer
+
+
