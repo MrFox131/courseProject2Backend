@@ -230,3 +230,14 @@ class Patch(Base):
     article = Column(Integer, ForeignKey("clothes.article"))
     width = Column(Numeric(10, 2))
     length = Column(Numeric(10, 2))
+
+
+class ClothPiece(Base):
+    __tablename__ = "product_pieces_mappings"
+
+    id = Column(Integer, primary_key=True)
+    cloth_article = Column(Integer, ForeignKey("clothes.article"))
+    product_id = Column(Integer, ForeignKey("products.id"))
+    width = Column(Numeric(10, 2))
+    length = Column(Numeric(10, 2))
+    count = Column(Integer, default=1)
