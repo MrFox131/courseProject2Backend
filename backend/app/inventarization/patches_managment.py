@@ -7,7 +7,11 @@ from .. import exceptions
 
 
 @app.post("/api/v1/patch", response_model=schemas.Patch)
-async def create_patch(patch: schemas.Patch, user: models.User = Depends(manager), db: Session = Depends(get_db)):
+async def create_patch(
+    patch: schemas.Patch,
+    user: models.User = Depends(manager),
+    db: Session = Depends(get_db),
+):
     if user.role not in [models.UserType.storage_manager, models.UserType.chef]:
         raise exceptions.InsufficientPrivileges
 

@@ -93,27 +93,34 @@ async def accessory_decommission(
 
 
 @app.patch("/api/v1/accessory_in_kg/{article}", tags=["storage"])
-def accessory_in_kg_decommission(article: int, amount: float, user: models.User = Depends(manager), db: Session = Depends(get_db)):
+def accessory_in_kg_decommission(
+    article: int,
+    amount: float,
+    user: models.User = Depends(manager),
+    db: Session = Depends(get_db),
+):
     if user.role not in [models.UserType.chef, models.UserType.storage_manager]:
         raise exceptions.InsufficientPrivileges
 
     batch: Optional[models.AccessoriesStorage] = (
         db.query(models.AccessoriesStorage)
-            .filter(models.AccessoriesStorage.article == article)
-            .one_or_none()
+        .filter(models.AccessoriesStorage.article == article)
+        .one_or_none()
     )
 
-    accessory: models.Accessory = db.query(models.Accessory).filter(models.Accessory.article == article).one_or_none()
+    accessory: models.Accessory = (
+        db.query(models.Accessory)
+        .filter(models.Accessory.article == article)
+        .one_or_none()
+    )
 
     if accessory is None:
         raise exceptions.ArticleDoesNotExist
 
     if not accessory.kg_acceptable:
         return JSONResponse(
-            status_code= 400,
-            content={
-                "detail": "Cannot decommission in kg on this item"
-            }
+            status_code=400,
+            content={"detail": "Cannot decommission in kg on this item"},
         )
 
     quantity = round(amount / accessory.weight)

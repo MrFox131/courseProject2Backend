@@ -224,9 +224,9 @@ class ClothChanges(Base):
 
 
 class Patch(Base):
-    __tablename__ = 'patches'
+    __tablename__ = "patches"
 
     id = Column(Integer, primary_key=True)
-    article = Column(Integer, ForeignKey('clothes.article'))
+    article = Column(Integer, ForeignKey("clothes.article"))
     width = Column(Numeric(10, 2))
     length = Column(Numeric(10, 2))

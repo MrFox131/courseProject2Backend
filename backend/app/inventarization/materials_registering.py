@@ -386,7 +386,9 @@ async def goods_arrival(
                 if not accessory_as_is.kg_acceptable:
                     old_accessory.amount += Decimal(count)
                 else:
-                    old_accessory.amount += Decimal(round((count / accessory_as_is.weight)))
+                    old_accessory.amount += Decimal(
+                        round((count / accessory_as_is.weight))
+                    )
 
             new_income = models.AccessoryChanges()
             if accessory_as_is.kg_acceptable:
