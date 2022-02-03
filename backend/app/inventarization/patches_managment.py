@@ -12,7 +12,14 @@ async def create_patch(patch: schemas.Patch, user: models.User = Depends(manager
         raise exceptions.InsufficientPrivileges
 
     new_patch = models.Patch(**(patch.dict()))
+
+    new_income = models.ClothChanges()
+    new_income.is_income = True
+    new_income.cloth_article = new_patch.article
+    new_income.area = new_patch.width * new_patch.length
+
     db.add(new_patch)
+    db.add(new_income)
     db.refresh(new_patch)
     db.commit()
 
