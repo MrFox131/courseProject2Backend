@@ -24,7 +24,7 @@ def verify_password(plain_password: str, password_salt: bytes, password_hash: by
     return password_hash == hash_password(plain_password, password_salt)[0]
 
 
-@manager.user_loader
+@manager.user_loader()
 async def get_user(identifier: str):
     db: Session = next(get_db())
     return db.query(models.User).filter(models.User.login == identifier).one_or_none()
