@@ -177,10 +177,10 @@ class PiecesDescription(BaseModel):
     count: int = 1
 
     @classmethod
-    def from_json(cls, cloth_pieces=Form(...)) -> List[PiecesDescription] :
+    def from_json(cls, cloth_pieces=Form(...)) -> List[PiecesDescription]:
         answer = []
-        if cloth_pieces[0] != '[':
-            cloth_pieces = '[' + cloth_pieces + ']'
+        if cloth_pieces[0] != "[":
+            cloth_pieces = "[" + cloth_pieces + "]"
         cloth_pieces = json.loads(cloth_pieces)
         for item in cloth_pieces:
             answer.append(PiecesDescription(**item))
