@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+import json
 from typing import Optional, List, ForwardRef, Union
 
 from pydantic import BaseModel
@@ -174,11 +175,11 @@ class PiecesDescription(BaseModel):
     count: int = 1
 
     @classmethod
-    def from_json(cls, json) -> List[PiecesDescription] :
+    def from_json(cls, cloth_pieces) -> List[PiecesDescription] :
         answer = []
-        if json[0]!= '[':
-            json = '[' + json + ']'
-        json = json.loads(json)
-        for item in json:
+        if cloth_pieces[0] != '[':
+            cloth_pieces = '[' + cloth_pieces + ']'
+        cloth_pieces = json.loads(cloth_pieces)
+        for item in cloth_pieces:
             answer.append(PiecesDescription(**item))
 
