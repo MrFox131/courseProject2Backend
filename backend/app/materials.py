@@ -417,4 +417,5 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
                 floor_fulling = True
                 current_floor = current_ceil
                 current_ceil = current_floor-1
+                current_x = 0
     return batch
