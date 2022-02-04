@@ -225,7 +225,7 @@ def get_changes(
     for accessory_article in accessory_articles:
         changes: List[models.AccessoryChanges] = (
             db.query(models.AccessoryChanges)
-            .filter(models.AccessoryChanges.cloth_article == accessory_article.accessory_article)
+            .filter(models.AccessoryChanges.accessory_article == accessory_article.accessory_article)
             .all()
         )
         for change in changes:
