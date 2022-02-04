@@ -134,7 +134,7 @@ def get_changes(
     user: models.User = Depends(manager),
     db: Session = Depends(get_db),
 ):
-    if user.role != models.UserType.manager:
+    if user.role not in [models.UserType.manager, models.UserType.chef]:
         raise exceptions.InsufficientPrivileges
 
     # cloth_changes: List[models.ClothChanges] = (
