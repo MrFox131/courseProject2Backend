@@ -297,7 +297,7 @@ def get_cloth_mapping(
             if piece.cloth_article not in cloth_pieces.keys():
                 cloth_pieces[piece.cloth_article] = []
             for _ in range(piece.count):
-                if piece.width > piece.length:
+                if piece.width < piece.length:
                     cloth_pieces[piece.cloth_article].append(
                         (int(float(piece.length * 100)), int(float(piece.width) * 100))
                     )
