@@ -1,6 +1,7 @@
 import datetime
 import json
-from typing import List, Optional
+from functools import reduce
+from typing import List, Optional, Tuple
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -27,7 +28,9 @@ async def add_new_product(
     length: int = Form(...),
     comment: str = Form(...),
     image: UploadFile = File(...),
-    cloth_pieces: List[schemas.PiecesDescription] = Depends(schemas.PiecesDescription.from_json),
+    cloth_pieces: List[schemas.PiecesDescription] = Depends(
+        schemas.PiecesDescription.from_json
+    ),
     accessory_articles: str = Form(...),
     size: int = Form(...),
     user: models.User = Depends(manager),
@@ -42,7 +45,9 @@ async def add_new_product(
         if same_article is not None:
             raise exceptions.ArticleAlreadyExists
 
-    new_product: models.ProductWithPreviousAccessoryCloth = models.ProductWithPreviousAccessoryCloth()
+    new_product: models.ProductWithPreviousAccessoryCloth = (
+        models.ProductWithPreviousAccessoryCloth()
+    )
     new_product.article = article
     new_product.name = name
     new_product.length = length
@@ -90,13 +95,21 @@ async def add_new_product(
     #         )
     #     )
 
-    accessory_articles = json.loads(accessory_articles if accessory_articles != '' else '[]')
+    accessory_articles = json.loads(
+        accessory_articles if accessory_articles != "" else "[]"
+    )
 
     for accessory in accessory_articles:
-        new_product.accessories.append(db.query(models.Accessory).filter(models.Accessory.article == accessory))
+        new_product.accessories.append(
+            db.query(models.Accessory).filter(models.Accessory.article == accessory)
+        )
 
     for cloth_object in cloth_pieces:
-        cloth: models.Cloth = db.query(models.Cloth).filter(models.Cloth.article == cloth_object.article).one()
+        cloth: models.Cloth = (
+            db.query(models.Cloth)
+            .filter(models.Cloth.article == cloth_object.article)
+            .one()
+        )
         if cloth not in new_product.clothes:
             new_product.clothes.append(cloth)
         new_piece: models.ClothPiece = models.ClothPiece()
@@ -254,27 +267,55 @@ async def get_parents_by_article(
 
 
 @app.get("/api/v1/get_cloth_mappings/{order_id}")
-def get_cloth_mapping(order_id: int, user: models.User = Depends(manager), db: Session = Depends(get_db)):
-    if user.role not in [models.UserType.chef, models.UserType.manager, models.UserType.former_employee]:
+def get_cloth_mapping(
+    order_id: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
+):
+    if user.role not in [
+        models.UserType.chef,
+        models.UserType.manager,
+        models.UserType.former_employee,
+    ]:
         raise exceptions.InsufficientPrivileges
 
-    order: models.OrderWithAllInfo = db.query(models.OrderWithAllInfo).filter(models.OrderWithAllInfo.id == order_id).one_or_none()
+    order: models.OrderWithAllInfo = (
+        db.query(models.OrderWithAllInfo)
+        .filter(models.OrderWithAllInfo.id == order_id)
+        .one_or_none()
+    )
 
     if order is None:
         raise exceptions.OrderDoesNotExist
 
-    cloth_pieces = {
-
-    }
+    cloth_pieces = {}
     for product in order.products:
-        cp: List[models.ClothPiece] = db.query(models.ClothPiece).filter(models.ClothPiece.product_id == product.product.id).all()
+        cp: List[models.ClothPiece] = (
+            db.query(models.ClothPiece)
+            .filter(models.ClothPiece.product_id == product.product.id)
+            .all()
+        )
         for piece in cp:
             if piece.cloth_article not in cloth_pieces.keys():
                 cloth_pieces[piece.cloth_article] = []
             for _ in range(piece.count):
                 if piece.width > piece.length:
-                    cloth_pieces[piece.cloth_article].append((int(float(piece.length*100)), int(float(piece.width)*100)))
+                    cloth_pieces[piece.cloth_article].append(
+                        (int(float(piece.length * 100)), int(float(piece.width) * 100))
+                    )
                 else:
-                    cloth_pieces[piece.cloth_article].append((int(float(piece.width) * 100), int(float(piece.length * 100))))
+                    cloth_pieces[piece.cloth_article].append(
+                        (int(float(piece.width) * 100), int(float(piece.length * 100)))
+                    )
 
-    return(cloth_pieces)
+    return get_current_mapping(123, cloth_pieces[123], db)
+
+
+def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session) -> str:
+    batches = (
+        db.query(models.ClothStorage)
+        .filter(models.ClothStorage.article == article)
+        .order_by(models.ClothStorage.length.desc())
+        .all()
+    )
+
+    max_height = reduce(lambda x, y: (x[0]+y[0], x[1]+y[1]), pieces)[0]
+    return max_height

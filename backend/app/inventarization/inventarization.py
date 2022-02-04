@@ -202,9 +202,13 @@ def get_changes(
                     "summary": 0.0,
                 }
             if change.is_income:
-                cloth_results[cloth_article.cloth_article]["income"] += float(change.area)
+                cloth_results[cloth_article.cloth_article]["income"] += float(
+                    change.area
+                )
             else:
-                cloth_results[cloth_article.cloth_article]["outcome"] += float(change.area)
+                cloth_results[cloth_article.cloth_article]["outcome"] += float(
+                    change.area
+                )
 
         cloth_results[cloth_article.cloth_article]["summary"] = (
             cloth_results[cloth_article.cloth_article]["income"]
@@ -225,7 +229,10 @@ def get_changes(
     for accessory_article in accessory_articles:
         changes: List[models.AccessoryChanges] = (
             db.query(models.AccessoryChanges)
-            .filter(models.AccessoryChanges.accessory_article == accessory_article.accessory_article)
+            .filter(
+                models.AccessoryChanges.accessory_article
+                == accessory_article.accessory_article
+            )
             .all()
         )
         for change in changes:
@@ -236,9 +243,13 @@ def get_changes(
                     "summary": 0,
                 }
             if change.is_income:
-                accessory_results[accessory_article.accessory_article]["income"] += change.amount
+                accessory_results[accessory_article.accessory_article][
+                    "income"
+                ] += change.amount
             else:
-                accessory_results[accessory_article.accessory_article]["outcome"] += change.amount
+                accessory_results[accessory_article.accessory_article][
+                    "outcome"
+                ] += change.amount
 
         accessory_results[accessory_article.accessory_article]["summary"] = (
             accessory_results[accessory_article.accessory_article]["income"]
