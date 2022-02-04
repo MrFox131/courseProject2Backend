@@ -273,8 +273,8 @@ def get_cloth_mapping(order_id: int, user: models.User = Depends(manager), db: S
                 cloth_pieces[piece.cloth_article] = []
             for _ in range(piece.count):
                 if piece.width > piece.length:
-                    cloth_pieces[piece.cloth_article].append((piece.length, piece.width))
+                    cloth_pieces[piece.cloth_article].append((int(float(piece.length*100)), int(float(piece.width)*100)))
                 else:
-                    cloth_pieces[piece.cloth_article].append((piece.width, piece.length))
+                    cloth_pieces[piece.cloth_article].append((int(float(piece.width) * 100), int(float(piece.length * 100))))
 
     print(cloth_pieces)
