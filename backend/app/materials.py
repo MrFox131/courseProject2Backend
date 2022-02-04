@@ -267,7 +267,7 @@ def get_cloth_mapping(order_id: int, user: models.User = Depends(manager), db: S
 
     }
     for product in order.products:
-        cp: List[models.ClothPiece] = db.query(models.ClothPiece).filter(models.ClothPiece.product_id == product.id).all()
+        cp: List[models.ClothPiece] = db.query(models.ClothPiece).filter(models.ClothPiece.product_id == product.product.id).all()
         for piece in cp:
             if piece.cloth_article not in cloth_pieces.keys():
                 cloth_pieces[piece.cloth_article] = []
