@@ -332,6 +332,7 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
     floor_fulling = True
 
     while len(pieces) > 0:
+        print(pieces)
         if current_ceil < current_floor:
             current_ceil = pieces[0][0]
             for i in range(current_floor, current_floor+pieces[0][0]):
