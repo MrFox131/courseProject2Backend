@@ -439,11 +439,15 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
     draw = ImageDraw.Draw(img)
     draw.line((0, 0) + img.size, fill=128)
     draw.line((0, img.size[1], img.size[0], 0), fill=128)
-    colors = [(random.randint(0,255), random.randint(0, 255), random.randint(0, 255)) for i in range(piece_number)]
+    colors = []
+    for i in range(resulting_height+1):
+        colors.append(
+            (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        )
     for i in range(resulting_height+1):
         for j in range(cloth_width):
             if batch[i][j] != -1:
-                draw.point((i,j), colors[batch[i][j]])
+                draw.point((j, img.size[1]-i), colors[batch[i][j]])
 
     img.save(Path().parent/"static"/"someImage.jpg")
     return batch
