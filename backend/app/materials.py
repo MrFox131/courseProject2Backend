@@ -1,7 +1,10 @@
 import datetime
 import json
 from functools import reduce
+from pathlib import Path
 from typing import List, Optional, Tuple
+
+from PIL import Image, ImageDraw
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -418,4 +421,22 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
                 current_floor = current_ceil
                 current_ceil = current_floor-1
                 current_x = 0
+
+
+    resulting_height = 0
+    for i in range(max_height):
+        clear = True
+        for j in range(cloth_width):
+            if batch[i][j] != -1:
+                clear = False
+                break
+        if clear:
+            resulting_height = i-1
+            break
+
+    img = Image.new('RGB', (cloth_width, resulting_height+1), 'white')
+    draw = ImageDraw(img)
+    draw.line((0, 0) + img.size, fill=128)
+    draw.line((0, img.size[1], img.size[0], 0), fill=128)
+    print((Path().parent/"static").exists())
     return batch
