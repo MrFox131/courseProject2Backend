@@ -388,6 +388,7 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
                             batch[j][k] = piece_number
                     element_found = True
                     current_x -= pieces[i][1]
+                    piece_number+=1
                     pieces = pieces[:i] + pieces[i+1:]
                     rotated_figures = rotated_figures[:i] + rotated_figures[i+1:]
                     print("added to ceil")
@@ -414,6 +415,7 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
                     pieces = pieces[:i] + pieces[i + 1:]
                     rotated_figures = rotated_figures[:i] + rotated_figures[i + 1:]
                     current_x -= rotated_figures[i][1]
+                    piece_number+=1
                     print("added to rotated")
                     break
 
@@ -440,7 +442,7 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
     draw.line((0, 0) + img.size, fill=128)
     draw.line((0, img.size[1], img.size[0], 0), fill=128)
     colors = []
-    for i in range(resulting_height+1):
+    for i in range(piece_number):
         colors.append(
             (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
         )
