@@ -1,5 +1,6 @@
 import datetime
 import json
+import random
 from functools import reduce
 from pathlib import Path
 from typing import List, Optional, Tuple
@@ -438,5 +439,11 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
     draw = ImageDraw.Draw(img)
     draw.line((0, 0) + img.size, fill=128)
     draw.line((0, img.size[1], img.size[0], 0), fill=128)
+    colors = [(random.randint(0,255), random.randint(0, 255), random.randint(0, 255)) for i in range(piece_number)]
+    for i in range(resulting_height+1):
+        for j in range(cloth_width):
+            if batch[i][j] != -1:
+                draw.point((i,j), colors[batch[i][j]])
+
     img.save(Path().parent/"static"/"someImage.jpg")
     return batch
