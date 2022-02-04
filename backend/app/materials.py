@@ -344,6 +344,7 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
                 current_x = cloth_width-1
                 floor_fulling = not floor_fulling
             pieces = pieces[1:]
+            print("added to new floor")
             continue
         if floor_fulling:
             element_found = False
@@ -357,6 +358,7 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
                     piece_number += 1
                     element_found = True
                     pieces = pieces[:i]+pieces[i+1:]
+                    print("added to floor")
                     break
             if not element_found:
                 current_x = cloth_width - 1
@@ -398,6 +400,7 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
                             if batch[i][j] != -1:
                                 is_free = False
 
+
                 if is_free:
                     for i in range(current_ceil - 1, current_ceil - 1 - rotated_figures[i][0]):
                         for j in range(current_x, current_x - rotated_figures[i][1]):
@@ -406,6 +409,7 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
                     pieces = pieces[:i] + pieces[i + 1:]
                     rotated_figures = rotated_figures[:i] + rotated_figures[i + 1:]
                     current_x -= rotated_figures[i][1]
+                    print("added to ceil")
                     break
 
             if not element_found:
