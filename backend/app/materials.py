@@ -277,4 +277,4 @@ def get_cloth_mapping(order_id: int, user: models.User = Depends(manager), db: S
                 else:
                     cloth_pieces[piece.cloth_article].append((int(float(piece.width) * 100), int(float(piece.length * 100))))
 
-    print(cloth_pieces)
+    return(cloth_pieces)
