@@ -435,7 +435,7 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
             break
 
     img = Image.new('RGB', (cloth_width, resulting_height+1), 'white')
-    draw = ImageDraw(img)
+    draw = ImageDraw.Draw(img)
     draw.line((0, 0) + img.size, fill=128)
     draw.line((0, img.size[1], img.size[0], 0), fill=128)
     print((Path().parent/"static").exists())
