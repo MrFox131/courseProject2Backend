@@ -202,9 +202,9 @@ def get_changes(
                     "summary": 0.0,
                 }
             if change.is_income:
-                cloth_results[cloth_article.cloth_article]["income"] += change.area
+                cloth_results[cloth_article.cloth_article]["income"] += float(change.area)
             else:
-                cloth_results[cloth_article.cloth_article]["outcome"] += change.area
+                cloth_results[cloth_article.cloth_article]["outcome"] += float(change.area)
 
         cloth_results[cloth_article.cloth_article]["summary"] = (
             cloth_results[cloth_article.cloth_article]["income"]
