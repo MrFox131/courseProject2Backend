@@ -438,5 +438,5 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
     draw = ImageDraw.Draw(img)
     draw.line((0, 0) + img.size, fill=128)
     draw.line((0, img.size[1], img.size[0], 0), fill=128)
-    print((Path().parent/"static").exists())
+    img.save(Path().parent/"static"/"someImage.jpg")
     return batch
