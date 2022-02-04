@@ -188,7 +188,7 @@ def get_changes(
     cloth_results = {}
 
     for cloth_article in cloth_articles:
-        changes: List[models.ClothChanges] = db.query(
+        changes: List[models.ClothChanges] = db.query(models.ClothChanges).filter(
             models.ClothChanges.cloth_article == cloth_article
         ).all()
         for change in changes:
@@ -219,7 +219,7 @@ def get_changes(
     accessory_results = {}
 
     for accessory_article in accessory_articles:
-        changes: List[models.AccessoryChanges] = db.query(
+        changes: List[models.AccessoryChanges] = db.query(models.AccessoryChanges).filter(
             models.AccessoryChanges.cloth_article == accessory_article
         ).all()
         for change in changes:
