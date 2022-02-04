@@ -317,5 +317,98 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
         .all()
     )
 
+    pieces = sorted(pieces, key=lambda e:(-e[0], -e[1]))
+
+    cloth_width = int(float(db.query(models.Cloth.width).filter(models.Cloth.article == article).one().width)*100)
+
     max_height = reduce(lambda x, y: (x[0]+y[0], x[1]+y[1]), pieces)[0]
-    return max_height
+    batch = [[-1 for i in range(cloth_width)] for _ in range(max_height)]
+
+    current_floor = 0
+    current_ceil = -1
+    current_x = 0
+
+    piece_number = 0
+    floor_fulling = True
+
+    while len(pieces) > 0:
+        if current_ceil < current_floor:
+            current_ceil = pieces[0][0]
+            for i in range(current_floor, current_floor+pieces[0][0]):
+                for j in range(current_x, current_x+pieces[0][1]):
+                    batch[i][j] = piece_number
+            piece_number += 1
+            current_x = pieces[0][1]
+            if current_x >= cloth_width:
+                current_x = cloth_width-1
+                floor_fulling = not floor_fulling
+            pieces = pieces[0:]
+            continue
+        if floor_fulling:
+            element_found = False
+            for i in range(len(pieces)):
+                if pieces[i][1]+current_x <= cloth_width:
+                    for j in range(current_floor, current_floor + pieces[i][0]):
+                        for k in range(current_x, current_x + pieces[i][1]):
+                            batch[j][k] = piece_number
+
+                    current_x += pieces[i][1]
+                    piece_number += 1
+                    element_found = True
+                    pieces = pieces[:i-1]+pieces[i:]
+                    break
+            if not element_found:
+                current_x = cloth_width - 1
+                floor_fulling = not floor_fulling
+
+        else:
+            rotated_figures = [(e[1], e[0]) for e in pieces]
+            element_found = False
+
+            for i in range(len(pieces)):
+                is_free = True
+                if current_ceil - 1 - pieces[i][0]<-1 or current_x - pieces[i][1]<-1:
+                    is_free = False
+                else:
+                    for i in range(current_ceil-1, current_ceil-1-pieces[i][0]):
+                        for j in range(current_x, current_x-pieces[i][1]):
+                            if batch[i][j] != -1:
+                                is_free = False
+
+                if is_free:
+                    for i in range(current_ceil - 1, current_ceil - 1 - pieces[i][0]):
+                        for j in range(current_x, current_x - pieces[i][1]):
+                            batch[i][j] = piece_number
+                    element_found = True
+                    current_x -= pieces[i][1]
+                    pieces = pieces[:i-1]+pieces[i:]
+                    rotated_figures = rotated_figures[:i-1]+ rotated_figures[i:]
+                    break
+            if element_found:
+                continue
+
+            for i in range(len(rotated_figures)):
+                is_free = True
+                if current_ceil - 1 - rotated_figures[i][0] < -1 or current_x - rotated_figures[i][1] < -1:
+                    is_free = False
+                else:
+                    for i in range(current_ceil - 1, current_ceil - 1 - rotated_figures[i][0]):
+                        for j in range(current_x, current_x - rotated_figures[i][1]):
+                            if batch[i][j] != -1:
+                                is_free = False
+
+                if is_free:
+                    for i in range(current_ceil - 1, current_ceil - 1 - rotated_figures[i][0]):
+                        for j in range(current_x, current_x - rotated_figures[i][1]):
+                            batch[i][j] = piece_number
+                    element_found = True
+                    pieces = pieces[:i - 1] + pieces[i:]
+                    rotated_figures = rotated_figures[:i - 1] + rotated_figures[i:]
+                    current_x -= rotated_figures[i][1]
+                    break
+
+            if not element_found:
+                floor_fulling = True
+                current_floor = current_ceil
+                current_ceil = current_floor-1
+    return batch
