@@ -356,7 +356,7 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
                     current_x += pieces[i][1]
                     piece_number += 1
                     element_found = True
-                    pieces = pieces[:i-1]+pieces[i:]
+                    pieces = pieces[:i]+pieces[i+1:]
                     break
             if not element_found:
                 current_x = cloth_width - 1
@@ -382,8 +382,8 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
                             batch[i][j] = piece_number
                     element_found = True
                     current_x -= pieces[i][1]
-                    pieces = pieces[:i-1]+pieces[i:]
-                    rotated_figures = rotated_figures[:i-1]+ rotated_figures[i:]
+                    pieces = pieces[:i] + pieces[i+1:]
+                    rotated_figures = rotated_figures[:i] + rotated_figures[i+1:]
                     break
             if element_found:
                 continue
@@ -403,8 +403,8 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
                         for j in range(current_x, current_x - rotated_figures[i][1]):
                             batch[i][j] = piece_number
                     element_found = True
-                    pieces = pieces[:i - 1] + pieces[i:]
-                    rotated_figures = rotated_figures[:i - 1] + rotated_figures[i:]
+                    pieces = pieces[:i] + pieces[i + 1:]
+                    rotated_figures = rotated_figures[:i] + rotated_figures[i + 1:]
                     current_x -= rotated_figures[i][1]
                     break
 
