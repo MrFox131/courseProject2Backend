@@ -267,7 +267,7 @@ async def get_parents_by_article(
 
 
 @app.get("/api/v1/get_cloth_mappings/{order_id}")
-def get_cloth_mapping(
+async def get_cloth_mapping(
     order_id: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
 ):
     if user.role not in [
@@ -343,7 +343,7 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
             if current_x >= cloth_width:
                 current_x = cloth_width-1
                 floor_fulling = not floor_fulling
-            pieces = pieces[0:]
+            pieces = pieces[1:]
             continue
         if floor_fulling:
             element_found = False
