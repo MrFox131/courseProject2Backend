@@ -386,6 +386,7 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
                     current_x -= pieces[i][1]
                     pieces = pieces[:i] + pieces[i+1:]
                     rotated_figures = rotated_figures[:i] + rotated_figures[i+1:]
+                    print("added to ceil")
                     break
             if element_found:
                 continue
