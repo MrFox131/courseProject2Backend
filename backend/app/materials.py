@@ -338,7 +338,7 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
     while len(pieces) > 0:
         print(pieces)
         if current_ceil < current_floor:
-            current_ceil = pieces[0][0]
+            current_ceil = current_floor+pieces[0][0]
             for i in range(current_floor, current_floor+pieces[0][0]):
                 for j in range(current_x, current_x+pieces[0][1]):
                     batch[i][j] = piece_number
