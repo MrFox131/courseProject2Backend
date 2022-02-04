@@ -253,3 +253,28 @@ async def get_parents_by_article(
     return answer
 
 
+@app.get("/api/v1/get_cloth_mappings/{order_id}")
+def get_cloth_mapping(order_id: int, user: models.User = Depends(manager), db: Session = Depends(get_db)):
+    if user.role not in [models.UserType.chef, models.UserType.manager, models.UserType.former_employee]:
+        raise exceptions.InsufficientPrivileges
+
+    order: models.OrderWithAllInfo = db.query(models.OrderWithAllInfo).filter(models.OrderWithAllInfo.id == order_id).one_or_none()
+
+    if order is None:
+        raise exceptions.OrderDoesNotExist
+
+    cloth_pieces = {
+
+    }
+    for product in order.products:
+        cp: List[models.ClothPiece] = db.query(models.ClothPiece).filter(models.ClothPiece.product_id == product.id).all()
+        for piece in cp:
+            if piece.cloth_article not in cloth_pieces.keys():
+                cloth_pieces[piece.cloth_article] = []
+            for _ in range(piece.count):
+                if piece.width > piece.length:
+                    cloth_pieces[piece.cloth_article].append((piece.length, piece.width))
+                else:
+                    cloth_pieces[piece.cloth_article].append((piece.width, piece.length))
+
+    print(cloth_pieces)

@@ -35,7 +35,7 @@ class ArticleDoesNotExist(Exception):
     pass
 
 
-class OrderDoesNotExists(Exception):
+class OrderDoesNotExist(Exception):
     pass
 
 
@@ -99,8 +99,8 @@ async def article_does_not_exist(request: Request, ex: ArticleDoesNotExist):
     )
 
 
-@app.exception_handler(OrderDoesNotExists)
-async def order_does_not_exist(request: Request, ex: OrderDoesNotExists):
+@app.exception_handler(OrderDoesNotExist)
+async def order_does_not_exist(request: Request, ex: OrderDoesNotExist):
     return JSONResponse(
         status_code=404, content={"description": "Order does not exist"}
     )

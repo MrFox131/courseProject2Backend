@@ -59,7 +59,7 @@ async def change_order_status(
         db.query(models.Order).filter(models.Order.id == id).one_or_none()
     )
     if current_order is None:
-        raise exceptions.OrderDoesNotExists
+        raise exceptions.OrderDoesNotExist
 
     if user.role == models.UserType.chef:
         current_order.stage = models.OrderStage(status)
