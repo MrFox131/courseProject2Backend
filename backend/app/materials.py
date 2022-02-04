@@ -373,14 +373,14 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
                 if current_ceil - 1 - pieces[i][0]<-1 or current_x - pieces[i][1]<-1:
                     is_free = False
                 else:
-                    for i in range(current_ceil-1, current_ceil-1-pieces[i][0]):
-                        for j in range(current_x, current_x-pieces[i][1]):
+                    for i in range(current_ceil-1, current_ceil-1-pieces[i][0], -1):
+                        for j in range(current_x, current_x-pieces[i][1], -1):
                             if batch[i][j] != -1:
                                 is_free = False
 
                 if is_free:
-                    for i in range(current_ceil - 1, current_ceil - 1 - pieces[i][0]):
-                        for j in range(current_x, current_x - pieces[i][1]):
+                    for i in range(current_ceil - 1, current_ceil - 1 - pieces[i][0], -1):
+                        for j in range(current_x, current_x - pieces[i][1], -1):
                             batch[i][j] = piece_number
                     element_found = True
                     current_x -= pieces[i][1]
@@ -396,15 +396,15 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
                 if current_ceil - 1 - rotated_figures[i][0] < -1 or current_x - rotated_figures[i][1] < -1:
                     is_free = False
                 else:
-                    for i in range(current_ceil - 1, current_ceil - 1 - rotated_figures[i][0]):
-                        for j in range(current_x, current_x - rotated_figures[i][1]):
+                    for i in range(current_ceil - 1, current_ceil - 1 - rotated_figures[i][0], -1):
+                        for j in range(current_x, current_x - rotated_figures[i][1], -1):
                             if batch[i][j] != -1:
                                 is_free = False
 
 
                 if is_free:
-                    for i in range(current_ceil - 1, current_ceil - 1 - rotated_figures[i][0]):
-                        for j in range(current_x, current_x - rotated_figures[i][1]):
+                    for i in range(current_ceil - 1, current_ceil - 1 - rotated_figures[i][0], -1):
+                        for j in range(current_x, current_x - rotated_figures[i][1], -1):
                             batch[i][j] = piece_number
                     element_found = True
                     pieces = pieces[:i] + pieces[i + 1:]
