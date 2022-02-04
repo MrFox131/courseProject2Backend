@@ -185,58 +185,64 @@ def get_changes(
         )
         .distinct()
     )
+
     cloth_results = {}
 
     for cloth_article in cloth_articles:
-        changes: List[models.ClothChanges] = db.query(models.ClothChanges).filter(
-            models.ClothChanges.cloth_article == cloth_article
-        ).all()
+        changes: List[models.ClothChanges] = (
+            db.query(models.ClothChanges)
+            .filter(models.ClothChanges.cloth_article == cloth_article.cloth_article)
+            .all()
+        )
         for change in changes:
-            if not cloth_article in cloth_results.keys():
-                cloth_results[cloth_article] = {
+            if not cloth_article.cloth_article in cloth_results.keys():
+                cloth_results[cloth_article.cloth_article] = {
                     "income": 0.0,
                     "outcome": 0.0,
                     "summary": 0.0,
                 }
             if change.is_income:
-                cloth_results[cloth_article]["income"] += change.area
+                cloth_results[cloth_article.cloth_article]["income"] += change.area
             else:
-                cloth_results[cloth_article]["outcome"] += change.area
+                cloth_results[cloth_article.cloth_article]["outcome"] += change.area
 
-        cloth_results[cloth_article]["summary"] = (
-            cloth_results[cloth_article]["income"]
-            - cloth_results[cloth_article]["outcome"]
+        cloth_results[cloth_article.cloth_article]["summary"] = (
+            cloth_results[cloth_article.cloth_article]["income"]
+            - cloth_results[cloth_article.cloth_article]["outcome"]
         )
 
     accessory_articles = (
         db.query(models.AccessoryChanges.accessory_article)
-            .filter(
-            models.AccessoryChanges.timestamp >= start, models.AccessoryChanges.timestamp <= end
+        .filter(
+            models.AccessoryChanges.timestamp >= start,
+            models.AccessoryChanges.timestamp <= end,
         )
-            .distinct()
+        .distinct()
     )
 
     accessory_results = {}
 
     for accessory_article in accessory_articles:
-        changes: List[models.AccessoryChanges] = db.query(models.AccessoryChanges).filter(
-            models.AccessoryChanges.cloth_article == accessory_article
-        ).all()
+        changes: List[models.AccessoryChanges] = (
+            db.query(models.AccessoryChanges)
+            .filter(models.AccessoryChanges.cloth_article == accessory_article.accessory_article)
+            .all()
+        )
         for change in changes:
-            if not accessory_article in accessory_results.keys():
-                accessory_results[accessory_article] = {
+            if not accessory_article.accessory_article in accessory_results.keys():
+                accessory_results[accessory_article.accessory_article] = {
                     "income": 0,
                     "outcome": 0,
                     "summary": 0,
                 }
             if change.is_income:
-                accessory_results[accessory_article]["income"] += change.amount
+                accessory_results[accessory_article.accessory_article]["income"] += change.amount
             else:
-                accessory_results[accessory_article]["outcome"] += change.amount
+                accessory_results[accessory_article.accessory_article]["outcome"] += change.amount
 
-        accessory_results[accessory_article]["summary"] = (
-                accessory_results[accessory_article]["income"]
-                - accessory_results[accessory_article]["outcome"]
+        accessory_results[accessory_article.accessory_article]["summary"] = (
+            accessory_results[accessory_article.accessory_article]["income"]
+            - accessory_results[accessory_article.accessory_article]["outcome"]
         )
 
     return {"clothes": cloth_results, "accessory": accessory_results}
