@@ -81,7 +81,7 @@ async def create_order(
     user: models.User = Depends(manager),
     db: Session = Depends(get_db),
 ):
-    if user.role != models.UserType.customer:
+    if user.role not in [models.UserType.customer, models.UserType.chef]:
         raise exceptions.InsufficientPrivileges
     new_order: models.OrderWithAllInfo = models.OrderWithAllInfo(
         stage=models.OrderStage.waiting, customer_id=user.id, cost=0
