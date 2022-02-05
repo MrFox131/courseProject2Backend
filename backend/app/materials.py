@@ -4,7 +4,7 @@ import random
 import secrets
 from functools import reduce
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict
 
 from PIL import Image, ImageDraw
 
@@ -311,11 +311,22 @@ async def get_cloth_mapping(
                         (int(float(piece.width) * 100), int(float(piece.length * 100)))
                     )
 
-    return get_current_mapping(123, cloth_pieces[123], db)
+    answer = []
+    for key, item in cloth_pieces.items():
+        answer.append(get_current_mapping(key, item, db))
+        if None in answer:
+            return JSONResponse(
+                status_code=404,
+                content={
+                    "detail": "Ткани не хватает"
+                }
+            )
+
+    return answer
 
 
-def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session) -> str:
-    batches = (
+def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session) -> Optional[Dict]:
+    batches: List[models.ClothStorage] = (
         db.query(models.ClothStorage)
         .filter(models.ClothStorage.article == article)
         .order_by(models.ClothStorage.length.desc())
@@ -440,4 +451,13 @@ def get_current_mapping(article: int, pieces: List[Tuple[int, int]], db: Session
 
     name = secrets.token_hex(32)
     img.save(Path().parent/"static"/f"{name}.jpg")
-    return f"static/{name}.jpg"
+    answer = {
+        "article": article,
+        "map": f"static/{name}.jpg",
+        "batch_number": -1,
+    }
+    for batch in batches:
+        if float(batch.length)>=current_ceil/100:
+            answer["batch_number"] = batch.number
+
+    return answer if answer["batch_number"] != -1 else None
