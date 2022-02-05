@@ -37,7 +37,7 @@ async def cloth_decommission(
     if math.fabs(batch.length) < 1e-10:
         db.delete(batch)
 
-    cloth: models.Cloth = db.query(models.Cloth).filter(models.Cloth.article == article)
+    cloth: models.Cloth = db.query(models.Cloth).filter(models.Cloth.article == article).one()
 
     new_decommission = models.ClothChanges()
     new_decommission.area = cloth.width * length
