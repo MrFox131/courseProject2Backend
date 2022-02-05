@@ -70,7 +70,7 @@ async def get_accessories(
     return db.query(models.Accessory).filter(models.Accessory.article == article).one()
 
 
-@app.get("/api/v1/cloth_by_id/{article}")
+@app.get("/api/v1/cloth_by_id/{article}") #
 async def cloth_by_article(
     article: int, user: models.User = Depends(manager), db: Session = Depends(get_db)
 ):
