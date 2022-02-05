@@ -298,18 +298,19 @@ async def get_cloth_mapping(
             .filter(models.ClothPiece.product_id == product.product.id)
             .all()
         )
-        for piece in cp:
-            if piece.cloth_article not in cloth_pieces.keys():
-                cloth_pieces[piece.cloth_article] = []
-            for _ in range(piece.count):
-                if piece.width < piece.length:
-                    cloth_pieces[piece.cloth_article].append(
-                        (int(float(piece.length * 100)), int(float(piece.width) * 100))
-                    )
-                else:
-                    cloth_pieces[piece.cloth_article].append(
-                        (int(float(piece.width) * 100), int(float(piece.length * 100)))
-                    )
+        for _ in range(product.count):
+            for piece in cp:
+                if piece.cloth_article not in cloth_pieces.keys():
+                    cloth_pieces[piece.cloth_article] = []
+                for _ in range(piece.count):
+                    if piece.width < piece.length:
+                        cloth_pieces[piece.cloth_article].append(
+                            (int(float(piece.length * 100)), int(float(piece.width) * 100))
+                        )
+                    else:
+                        cloth_pieces[piece.cloth_article].append(
+                            (int(float(piece.width) * 100), int(float(piece.length * 100)))
+                        )
 
     answer = []
     for key, item in cloth_pieces.items():
