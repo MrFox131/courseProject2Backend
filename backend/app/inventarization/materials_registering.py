@@ -434,7 +434,7 @@ async def goods_arrival(
                 )
 
                 new_income = models.ClothChanges()
-                new_income.area = length * cloth_as_is.width
+                new_income.area = Decimal(length * float(cloth_as_is.width))
                 new_income.is_income = True
                 new_income.number = new_id
                 new_income.cloth_article = cloth
