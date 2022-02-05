@@ -106,7 +106,7 @@ async def add_new_product(
 
     for accessory in accessory_articles:
         new_product.accessories.append(
-            db.query(models.Accessory).filter(models.Accessory.article == accessory)
+            db.query(models.Accessory).filter(models.Accessory.article == accessory).one()
         )
 
     for cloth_object in cloth_pieces:
